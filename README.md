@@ -1,16 +1,57 @@
-# pitch_perfect_flutter
+# Pitch Perfect
 
-A new Flutter project.
+## Group members
+- 2406365326 - Sultanadika Shidqi Mumtazsami
+- 2406365351 - Ayshia La Fleur Felizia
+- 2406453392 - Arisa Raezzura Zahra
+- 2406453556 - Muhammad Rafi Nazir Pratama
+- 2406453581 - Rafasyah Miyauchi
 
-## Getting Started
+## Application Description (Application Story Proposed and Its Benefits)
+**Pitch Perfect** is mainly a comprehensive and interactive social platform that is designed specifically for the football fan. Our aim is to be a hub where those football enthusiasts can connect with a community, engage and track the sports, including their favorite clubs in detail. 
 
-This project is a starting point for a Flutter application.
+There are several features that our application can do; It allows users to follow their favorite clubs, participate in official and unofficial forums, predict match outcomes, and dive deep into team statistics. To conclude, the key benefit of our platform is that it is intended to provide a single, feature-rich environment that consolidates discussion, statistics and friendly competition, which in the end enhance the way us, fans, experience the sports!
 
-A few resources to get you started if this is your first Flutter project:
+## List of Modules to be Implemented
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1.  **Main & User Authentication** (Rae) 
+    * **Description**: The core application module that handles user registration, login, and profile management. It serves as the entry point that directs users to all other features.
+    * **User Action**: Users can register for a new account, log in, and edit their profile information, including name, email, and password.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2.  **Football Forum Official and Unofficial** (Ayshia) 
+    * **Description**: A discussion platform where users can engage in conversations. Discussions can be filtered by favorite clubs. Admin accounts are designated as "Official" and can post official news.
+    * **User Action**: Create new discussion posts/threads, reply to existing posts, and view official news from admins.
+
+3.  **Club Directory and Fan Following** (Rafa)
+    * **Description**: This module lists all available football clubs, clubs background and history. The primary user interaction involves managing a personal list of followed clubs.
+    * **User Action**: Add a club to their favorites list (The "Favorite" Form) and remove a club from their list (The "Unfavorite" Form).
+
+4.  **Competition & Match Prediction** (Sultan)
+    * **Description**: Admins create match events, and users can submit their predictions for the outcome of those matches.
+    * **User Action**: View a list of upcoming matches and submit a score prediction for a chosen match.
+
+5.  **Club Statistics** (Rafi)
+    * **Description**: Provides detailed statistics. Users can maintain a watchlist of their favorite players, vote for awards like "Team of the Week/Month/Season", and compare stats between two players.
+    * **User Action**: Add/remove players from a personal watchlist, vote in polls for "Player of the Week," and use the player comparison tool.
+
+## User Roles and Their Descriptions
+* **Admin**: Considered an "Official Account". We think that Admins are responsible for managing the platform's official content. With that being said, they are able to post official news in the forum and create official match fixtures for users to predict on.
+* **Normal User**: A registered user of the platform. Their actions may include:
+    * Registering, logging in, and managing their profile information.
+    * Creating posts, editing the posts they made themselves and replying in the football forums.
+    * Following and unfollowing their favorite clubs.
+    * Submitting predictions for upcoming matches.
+    * Comparing clubs statistics.
+
+## Integration Flow
+To integrate our Flutter app with the Django backend, we basically treated the backend as a **RESTful web service**. Theoretically, this was necessary because our original midterm project returned HTML templates meant for browsers, which a mobile app cannot process efficiently. So, practically, we created new endpoints in Django that output raw data in JSON format instead of rendering HTML.
+
+On the client side, we used the http library to handle the communication. We implemented this asynchronously to ensure the app’s UI doesn't freeze while waiting for a server response. However, the biggest technical challenge was authentication. Since HTTP is theoretically a **stateless** protocol, meaning the server forgets you immediately after a request, we couldn't just send simple requests for login.
+
+To solve this practically, we used the **pbp_django_auth** package. This acts as a cookie jar, storing the sessionID cookie from Django just like a web browser would. This allows the server to recognize the user across different requests for features like logout or updating data. Finally, to ensure data integrity, we strictly mapped our Django models to Dart classes. We implemented specific serialization logic (converting objects to JSON) and deserialization (JSON to objects) so that the data types, like integers and strings, match perfectly between the Python backend and the Dart frontend.
+
+## Related Links
+Flutter GitHub: [Flutter GitHub Link](https://github.com/thepitchperfect/PitchPerfect_Flutter)
+Django GitHub: [Django GitHub Link](https://github.com/thepitchperfect/PerfectPitch)
+Django PWS deployment: [Django PWS Deployment Link](arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id)
+Figma Design: [Figma Design Link](https://www.figma.com/design/cEZoGfGJkYfyTcuJxowkNN/ThePitchPerfect?node-id=0-1&t=88G0BzMiWYsIi7Xc-1)
