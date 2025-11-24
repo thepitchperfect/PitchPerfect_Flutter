@@ -51,7 +51,7 @@ On the client side, we used the http library to handle the communication. We imp
 To solve this practically, we used the **pbp_django_auth** package. This acts as a cookie jar, storing the sessionID cookie from Django just like a web browser would. This allows the server to recognize the user across different requests for features like logout or updating data. Finally, to ensure data integrity, we strictly mapped our Django models to Dart classes. We implemented specific serialization logic (converting objects to JSON) and deserialization (JSON to objects) so that the data types, like integers and strings, match perfectly between the Python backend and the Dart frontend.
 
 ## Related Links
-Flutter GitHub: [Flutter GitHub Link](https://github.com/thepitchperfect/PitchPerfect_Flutter)
-Django GitHub: [Django GitHub Link](https://github.com/thepitchperfect/PerfectPitch)
-Django PWS deployment: [Django PWS Deployment Link](arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id)
-Figma Design: [Figma Design Link](https://www.figma.com/design/cEZoGfGJkYfyTcuJxowkNN/ThePitchPerfect?node-id=0-1&t=88G0BzMiWYsIi7Xc-1)
+- Flutter GitHub: [Flutter GitHub Link](https://github.com/thepitchperfect/PitchPerfect_Flutter)
+- Django GitHub: [Django GitHub Link](https://github.com/thepitchperfect/PerfectPitch)
+- Django PWS deployment: [Django PWS Deployment Link](arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id)
+- Figma Design: [Figma Design Link](https://www.figma.com/design/cEZoGfGJkYfyTcuJxowkNN/ThePitchPerfect?node-id=0-1&t=88G0BzMiWYsIi7Xc-1)
