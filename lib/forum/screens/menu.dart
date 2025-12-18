@@ -1,17 +1,19 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart' as forum_model;
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:pitch_perfect_flutter/forum/widgets/news_card.dart';
 import 'package:pitch_perfect_flutter/forum/widgets/discussion_card.dart';
+import 'package:pitch_perfect_flutter/forum/screens/create_post_form.dart';
+// import 'package:pitch_perfect_flutter/authentication/screens/login.dart';
+import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart' as forum_model;
 
 class ForumHomePage extends StatelessWidget {
   const ForumHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MyHomePage();
+    return const MyHomePage();
   }
 }
 
@@ -28,21 +30,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _futureDiscussions = _fetchDiscussions();
+    _futureDiscussions = _fetchDiscussions(context);
   }
 
-  Future<List<forum_model.ForumEntry>> _fetchDiscussions() async {
-    final response = await http.get(Uri.parse('http://localhost:8000/forum/json/'));
-    if (response.statusCode == 200) {
-      final List<forum_model.ForumEntry> entries = forum_model.forumEntryFromJson(response.body);
-      return entries.where((entry) => entry.postType.toLowerCase() == 'discussion').toList();
-    } else {
-      throw Exception('Failed to load discussions');
+  Future<List<forum_model.ForumEntry>> _fetchDiscussions(BuildContext context) async {
+    final request = context.read<CookieRequest>();
+    final response = await request.get('http://localhost:8000/forum/json/');
+    final List<forum_model.ForumEntry> entries = [];
+    for (var item in response) {
+      entries.add(forum_model.ForumEntry.fromJson(item));
     }
+    return entries.where((entry) => entry.postType.toLowerCase() == 'discussion').toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -57,14 +61,14 @@ class _MyHomePageState extends State<MyHomePage> {
       body: RefreshIndicator(
         onRefresh: () async {
           setState(() {
-            _futureDiscussions = _fetchDiscussions();
+            _futureDiscussions = _fetchDiscussions(context);
           });
         },
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -77,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontSize: 22.0,
                       ),
                     ),
+                    const SizedBox(height: 8.0),
                   ],
                 ),
               ),
@@ -94,7 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const SliverToBoxAdapter(
-                    child: Center(child: Text('No discussions found.')),
+                    child: Center(
+                        child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('No discussions found.'),
+                    )),
                   );
                 }
 
@@ -113,29 +122,46 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // if (request.loggedIn) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CreatePostForm()),
+            ).then((_) {
+              // Refresh the discussions list after a new post is created
+              setState(() {
+                _futureDiscussions = _fetchDiscussions(context);
+              });
+            });
+          // } else {
+            // Navigator.push(
+              // context,
+              // MaterialPageRoute(builder: (context) => const ForumHomePage()),/// change this
+            // );
+          },
+        // },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 }
 
 
 class InfoCard extends StatelessWidget {
-  // Kartu informasi yang menampilkan title dan content.
-
-  final String title;  // Judul kartu.
-  final String content;  // Isi kartu.
+  final String title;
+  final String content;
 
   const InfoCard({super.key, required this.title, required this.content});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      // Membuat kotak kartu dengan bayangan dibawahnya.
       elevation: 2.0,
       child: Container(
-        // Mengatur ukuran dan jarak di dalam kartu.
-        width: MediaQuery.of(context).size.width / 3.5, // menyesuaikan dengan lebar device yang digunakan.
+        width: MediaQuery.of(context).size.width / 3.5,
         padding: const EdgeInsets.all(16.0),
-        // Menyusun title dan content secara vertikal.
         child: Column(
           children: [
             Text(
