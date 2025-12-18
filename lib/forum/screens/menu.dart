@@ -1,7 +1,10 @@
 import 'dart:async';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart' as forum_model;
 import 'package:pitch_perfect_flutter/forum/widgets/news_card.dart';
+import 'package:pitch_perfect_flutter/forum/widgets/discussion_card.dart';
 
 class ForumHomePage extends StatelessWidget {
   const ForumHomePage({super.key});
@@ -12,54 +15,102 @@ class ForumHomePage extends StatelessWidget {
   }
 }
 
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-  final String nama = "Ayshia La Fleur Felizia"; // Name
-  final String npm = "2406365351"; // NPM
-  final String kelas = "KKI"; // Class
+class _MyHomePageState extends State<MyHomePage> {
+  late Future<List<forum_model.ForumEntry>> _futureDiscussions;
 
-  final List<ItemHomepage> items = [
-    ItemHomepage("See Football News", Icons.newspaper),
-    ItemHomepage("Add News", Icons.add),
-    ItemHomepage("Logout", Icons.logout),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _futureDiscussions = _fetchDiscussions();
+  }
+
+  Future<List<forum_model.ForumEntry>> _fetchDiscussions() async {
+    final response = await http.get(Uri.parse('http://localhost:8000/forum/json/'));
+    if (response.statusCode == 200) {
+      final List<forum_model.ForumEntry> entries = forum_model.forumEntryFromJson(response.body);
+      return entries.where((entry) => entry.postType.toLowerCase() == 'discussion').toList();
+    } else {
+      throw Exception('Failed to load discussions');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
     return Scaffold(
-      // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
-        // Judul aplikasi "Football News" dengan teks putih dan tebal.
         title: const Text(
-          'Football News',
+          'Forum Discussion',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      // Body halaman dengan padding di sekelilingnya.
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          // Menyusun widget secara vertikal dalam sebuah kolom.
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const OfficialNewsCard(),
-              // Row untuk menampilkan 3 InfoCard secara horizontal.
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            _futureDiscussions = _fetchDiscussions();
+          });
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const OfficialNewsCard(),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'Discussions',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            FutureBuilder<List<forum_model.ForumEntry>>(
+              future: _futureDiscussions,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (snapshot.hasError) {
+                  return SliverToBoxAdapter(
+                    child: Center(child: Text('Error: ${snapshot.error}')),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(child: Text('No discussions found.')),
+                  );
+                }
 
-              // Memberikan jarak vertikal 16 unit.
-              const SizedBox(height: 16.0),
+                final discussions = snapshot.data!;
 
-
-            ],
-          ),
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return DiscussionCard(post: discussions[index]);
+                    },
+                    childCount: discussions.length,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
