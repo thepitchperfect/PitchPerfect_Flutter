@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class MenuPage extends StatelessWidget {
-  const MenuPage({super.key});
+import 'package:flutter/material.dart';
+import 'package:pitch_perfect_flutter/forum/widgets/news_card.dart';
+
+class ForumHomePage extends StatelessWidget {
+  const ForumHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class MyHomePage extends StatelessWidget {
     ItemHomepage("Add News", Icons.add),
     ItemHomepage("Logout", Icons.logout),
   ];
- 
+
   @override
   Widget build(BuildContext context) {
     // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
@@ -41,48 +44,22 @@ class MyHomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       // Body halaman dengan padding di sekelilingnya.
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        // Menyusun widget secara vertikal dalam sebuah kolom.
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Row untuk menampilkan 3 InfoCard secara horizontal.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoCard(title: 'NPM', content: npm),
-                InfoCard(title: 'Name', content: nama),
-                InfoCard(title: 'Class', content: kelas),
-              ],
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          // Menyusun widget secara vertikal dalam sebuah kolom.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const OfficialNewsCard(),
+              // Row untuk menampilkan 3 InfoCard secara horizontal.
 
-            // Memberikan jarak vertikal 16 unit.
-            const SizedBox(height: 16.0),
-
-            // Menempatkan widget berikutnya di tengah halaman.
-            Center(
-              child: Column(
-                // Menyusun teks dan grid item secara vertikal.
-
-                children: [
-                  // Menampilkan teks sambutan dengan gaya tebal dan ukuran 18.
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Selamat datang di Football News',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ),
+              // Memberikan jarak vertikal 16 unit.
+              const SizedBox(height: 16.0),
 
 
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

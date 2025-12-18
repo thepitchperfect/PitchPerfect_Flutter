@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
               .copyWith(secondary: Colors.orangeAccent[200]),
         ),
-        home: const MenuPage(),
+        home: const ForumHomePage(),
       ),
     );
   }
