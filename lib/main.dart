@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'clubdirectory/screens/club_directory_page.dart';
 import 'package:pitch_perfect_flutter/forum/screens/menu.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -10,36 +14,129 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (_) {
-        CookieRequest request = CookieRequest();
-        return request;
-      },
+    return Provider<CookieRequest>(
+      create: (_) => CookieRequest(),
       child: MaterialApp(
-        title: 'Football News',
+        title: 'PitchPerfect',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
-              .copyWith(secondary: Colors.orangeAccent[200]),
+          // 1. COLOR PALETTE (International White & Navy)
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF1E293B), // Navy (Slate 800)
+            secondary: Color(0xFFF97316), // Orange
+            surface: Color(0xFFF8FAFC), // Ultra Light Grey (Slate 50)
+            background: Color(0xFFF8FAFC),
+            onSurface: Color(0xFF1E293B),
+          ),
+
+          // 2. TYPOGRAPHY (The Secret Sauce)
+          textTheme: TextTheme(
+            // Headers = Orbitron (Futuristic/Sports)
+            displayLarge: GoogleFonts.orbitron(fontWeight: FontWeight.w900, letterSpacing: -1.0, color: const Color(0xFF1E293B)),
+            displayMedium: GoogleFonts.orbitron(fontWeight: FontWeight.bold, letterSpacing: 0.5, color: const Color(0xFF1E293B)),
+            displaySmall: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
+            headlineMedium: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
+
+            // Body = Lato (Clean/Readable)
+            bodyLarge: GoogleFonts.lato(fontSize: 16, color: const Color(0xFF334155)),
+            bodyMedium: GoogleFonts.lato(fontSize: 14, color: const Color(0xFF475569)),
+            labelLarge: GoogleFonts.tektur(fontWeight: FontWeight.bold), // Buttons
+          ),
+
+          useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+
+          // 3. COMPONENT THEMES
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF1E293B),
+            elevation: 0,
+            centerTitle: false,
+            titleTextStyle: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.0,
+              color: const Color(0xFF1E293B),
+            ),
+          ),
+
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF97316),
+              foregroundColor: Colors.white,
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: GoogleFonts.tektur(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
         ),
-        home: const ForumHomePage(),
+        home: const MainPage(),
+      ),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const ClubDirectoryPage(),
+    const Center(child: Text("Stats Module")),
+    const Center(child: Text("Match Predictions")),
+    const Center(child: Text("Forum")),
+    const Center(child: Text("Profile")),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      // UNIVERSAL NAVBAR (Kept as requested)
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFFF97316),
+          unselectedItemColor: Colors.grey.shade400,
+          showUnselectedLabels: true,
+          selectedLabelStyle: GoogleFonts.tektur(fontSize: 10, fontWeight: FontWeight.bold),
+          unselectedLabelStyle: GoogleFonts.lato(fontSize: 10, fontWeight: FontWeight.bold),
+          elevation: 0,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.shield_outlined), activeIcon: Icon(Icons.shield), label: 'Directory'),
+            BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),
+            BottomNavigationBarItem(icon: Icon(Icons.sports_soccer), label: 'Matches'),
+            BottomNavigationBarItem(icon: Icon(Icons.forum_outlined), label: 'Forum'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+          ],
+        ),
       ),
     );
   }
