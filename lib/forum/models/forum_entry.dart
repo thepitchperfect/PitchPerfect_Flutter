@@ -71,11 +71,18 @@ class Comment {
     required this.createdAt,
   });
 
-  factory Comment.fromJson(Map<String, dynamic> json) => Comment(
-    author: json["author"],
-    content: json["content"],
-    createdAt: DateTime.parse(json["created_at"]),
-  );
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    // Handle both String and Map types for author for robustness
+    final authorName = json["author"] is String
+        ? json["author"]
+        : (json["author"] is Map ? json["author"]["username"] : "Unknown");
+
+    return Comment(
+      author: authorName,
+      content: json["content"],
+      createdAt: DateTime.parse(json["created_at"]),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "author": author,

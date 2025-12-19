@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     const OfficialNewsCard(),
                     const SizedBox(height: 16.0),
                     const Text(
-                      'Discussions',
+                      'Latest Discussions',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22.0,
