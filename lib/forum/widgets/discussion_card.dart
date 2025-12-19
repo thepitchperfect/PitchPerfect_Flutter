@@ -82,7 +82,7 @@ class DiscussionCard extends StatelessWidget {
                               ),
                               if (isEdited)
                                 const TextSpan(
-                                  text: ' | edited',
+                                  text: ' (edited)',
                                   style: TextStyle(fontStyle: FontStyle.italic),
                                 ),
                             ],
@@ -96,15 +96,20 @@ class DiscussionCard extends StatelessWidget {
                     ),
                   ),
                   Row(
-                    children: post.clubs.map((clubId) {
-                      final logoUrl = '$_baseUrl/media/club_logos/$clubId.png';
+                    children: post.clubs.map((club) {
+                      final logoUrl = club.logoUrl;
+
+                      if (logoUrl == null || logoUrl.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
                       return Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Image.network(
-                          logoUrl,
+                          '$_baseUrl/forum/proxy-image/?url=${Uri.encodeComponent(logoUrl)}',
                           height: 30,
                           width: 30,
                           errorBuilder: (context, error, stackTrace) {
+                            print("Failed to load image: $logoUrl, Error: $error");
                             return const Icon(Icons.shield, size: 30, color: Colors.grey);
                           },
                         ),

@@ -3,6 +3,7 @@
 //     final forumEntry = forumEntryFromJson(jsonString);
 
 import 'dart:convert';
+import '../../clubdirectory/models/club_model.dart';
 
 List<ForumEntry> forumEntryFromJson(String str) => List<ForumEntry>.from(json.decode(str).map((x) => ForumEntry.fromJson(x)));
 
@@ -16,7 +17,7 @@ class ForumEntry {
   String author;
   DateTime createdAt;
   DateTime updatedAt;
-  List<dynamic> clubs;
+  List<Club> clubs;
   List<Image> images;
   List<Comment> comments;
 
@@ -41,7 +42,7 @@ class ForumEntry {
     author: json["author"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
-    clubs: List<dynamic>.from(json["clubs"].map((x) => x)),
+    clubs: List<Club>.from(json["clubs"].map((x) => Club.fromJson(x))),
     images: List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
     comments: List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
   );
@@ -54,7 +55,7 @@ class ForumEntry {
     "author": author,
     "created_at": createdAt.toIso8601String(),
     "updated_at": updatedAt.toIso8601String(),
-    "clubs": List<dynamic>.from(clubs.map((x) => x)),
+    "clubs": List<dynamic>.from(clubs.map((x) => x.toJson())),
     "images": List<dynamic>.from(images.map((x) => x.toJson())),
     "comments": List<dynamic>.from(comments.map((x) => x.toJson())),
   };

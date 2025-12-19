@@ -25,6 +25,12 @@ class Club {
       isLeaguePick: json['is_league_pick'] ?? false, 
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "logo_url": logoUrl,
+  };
 }
 
 class League {

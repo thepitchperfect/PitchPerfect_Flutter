@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
     const ClubDirectoryPage(),
     const Center(child: Text("Stats Module")),
     const Center(child: Text("Match Predictions")),
-    const Center(child: Text("Forum")),
+    const ForumHomePage(),
     const Center(child: Text("Profile")),
   ];
 

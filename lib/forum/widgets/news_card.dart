@@ -125,7 +125,7 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     // To debug image loading issues
-                    print("Failed to load image: $imageUrl, Error: $error");
+                    //print("Failed to load image: $imageUrl, Error: $error");
                     return Container(
                       height: 200,
                       width: double.infinity,

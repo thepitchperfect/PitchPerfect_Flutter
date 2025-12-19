@@ -93,7 +93,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                             ),
                             if (isEdited)
                               const TextSpan(
-                                text: ' | edited',
+                                text: ' (edited)',
                                 style: TextStyle(fontStyle: FontStyle.italic),
                               ),
                           ],
@@ -103,15 +103,27 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     ],
                   ),
                 ),
-                // Row(
-                //   children: widget.post.clubs.map((clubLogoUrl) {
-                //     final proxiedLogoUrl = '$_baseUrl/proxy-image/?url=${Uri.encodeComponent(clubLogoUrl)}';
-                //     return Padding(
-                //       padding: const EdgeInsets.only(left: 8.0),
-                //       child: Image.network(proxiedLogoUrl, height: 32, width: 32, errorBuilder: (c, e, s) => const Icon(Icons.shield, size: 32, color: Colors.grey)),
-                //     );
-                //   }).toList(),
-                // ),
+                Row(
+                  children: widget.post.clubs.map((club) {
+                    final logoUrl = club.logoUrl;
+
+                    if (logoUrl == null || logoUrl.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Image.network(
+                        '$_baseUrl/forum/proxy-image/?url=${Uri.encodeComponent(logoUrl)}',
+                        height: 30,
+                        width: 30,
+                        errorBuilder: (context, error, stackTrace) {
+                          print("Failed to load image: $logoUrl, Error: $error");
+                          return const Icon(Icons.shield, size: 30, color: Colors.grey);
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
               ],
             ),
             const SizedBox(height: 16.0),
