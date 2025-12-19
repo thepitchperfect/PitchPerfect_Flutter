@@ -12,14 +12,14 @@ class DiscussionCard extends StatelessWidget {
   String get _baseUrl {
     // For web, use localhost
     if (kIsWeb) {
-      return "http://localhost:8000";
+      return "http://localhost:8000/forum";
     }
     // For Android emulator, use 10.0.2.2
     if (Platform.isAndroid) {
       return "http://10.0.2.2:8000";
     }
     // For other platforms (like iOS simulator), use localhost
-    return "http://localhost:8000";
+    return "http://localhost:8000/forum";
   }
 
   @override

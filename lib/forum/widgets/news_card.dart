@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/forum_entry.dart' as forum_model;
@@ -17,7 +18,17 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
   Timer? _timer;
 
   // Use 10.0.2.2 for Android Emulator to connect to host machine's localhost
-  final String _baseUrl = "http://localhost:8000";
+  String get _baseUrl {
+    if (kIsWeb) {
+      // If running on the web, use localhost
+      return "http://localhost:8000";
+    } else {
+      // If not on the web (i.e., mobile), use the Android emulator IP.
+      // Note: This assumes you are only testing on Android for now. A more
+      // robust solution would check Platform.isAndroid specifically here.
+      return "http://10.0.2.2:8000";
+    }
+  }
 
   @override
   void initState() {
@@ -33,6 +44,9 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
 
   Future<List<forum_model.ForumEntry>> _fetchNews() async {
     final response = await http.get(Uri.parse('$_baseUrl/forum/json/'));
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       final List<forum_model.ForumEntry> news = forum_model.forumEntryFromJson(response.body);
       final officialNews = news.where((entry) => entry.postType.toLowerCase() == 'news').toList();
@@ -45,7 +59,7 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
       }
       return officialNews;
     } else {
-      throw Exception('Failed to load news');
+      throw Exception('Failed to load news. Status code: ${response.statusCode}');
     }
   }
 
@@ -89,7 +103,7 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
         }
 
         final imageUrl = currentNews.images.isNotEmpty
-            ? '$_baseUrl/proxy-image/?url=${Uri.encodeComponent(currentNews.images[0].url)}'
+            ? '$_baseUrl/forum/proxy-image/?url=${Uri.encodeComponent(currentNews.images[0].url)}'
             : 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAOBg8QDw4QDg8QEA4PDg4NDRIPDw8PFREYFhUSFRMYKCggGB0lGxMTITEhJSkrLi4uFx8zODMsNygtLjcBCgoKBQUFDgUFDisZExkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIALcBFAMBIgACEQEDEQH/xAAaAAEAAwEBAQAAAAAAAAAAAAAAAwQFAgEH/8QAMBABAAEBBAYKAgMBAAAAAAAAAAECAwQRURMhM3GBkRIUMTRBUmGiscGCoSIjQtH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+zgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADyaojtmOaOq8Ux/rlrBKK03ynwiZ/SOq+z4UxxnEF0UaLzVNpGM6sYxiIXgAAAAAAAAAAAAAAAAAAAAAAARXnHQzhOGGAJcXFVtTHbVDN1zV4zPN3F2rn/ADhv1At1XumM53QjqvuVPOXFNzq8ZiP2kpuceNUz+gRTeqpyjdCKbWqe2qea/F2oyx3y7iiI7IiAZtNEzPZMpKbrVPhhvloAKcXKfGqOES7pudMeMysgMquMLSYylqUzjTChfKf759da5d5xsad2AJAAAAAAAAAAAAAAAAAAAAAAHNpGNnMek/DoBmWFWFvTPq02VXGFpPpM/LUpnGkFe8280VxhEdnii67VlBftrG77dXewpqssZ+cAc9dqyg67VlCXQWefvNBZ5+8EXXasoOu1ZQk0Fnn7zQWefvBH12rKDrtWUJNBZ5+80Fnn7wVba1murGcODuyvM004RhxT6Czz973QWefvBF1yrKElheZqtYicPHseW13piymY4a8UN028bpBogAAAAAAAAAAAAAAAAAAAAAzr3Thbz64Su3ecbGncrX+n+UT6YJbjV/VhlIIr9tY3faS692nj8I79tY3faS692nj8AoytWd0macZnD0VonW1aKomnGPEGbbWM0Va+Eo1y/Vxqjx7VMAE93sOlOvs+QQCxebv0dca4+FcF6e4/jHyr3TbxulYnuP4x8q9028bpBogAAAAAAAAAAAAAAAAAAAAArX6P6onKflHcKv5VRulYvMY2FXNUuk4W8euMA7v21jd9pLr3aePwjv21jd9pLr3aePwCi9iqY7JmN0vHVFnNU6oxBziPZjCcJ1T6u7GymurCOM5A9u9l06vSO2WjTTERhHY8s6Ippwh0BMYxr1s68WPRq9J7P+NFzXRFVOEggnuP4x8q9028bpWrano3SYyj7Vbpt43SDRAAAAAAAAAAAAAAAAAAAAAB5VGNMwzLOcLSPSYajLtowtqt8gmv21jd9pbr3aePwq2lpNVUTP6XLlseMggsbrM66tUfuV2mmIjCIwegOLWyiqNccfEsrOKacI55uwAAAAEV62FW77U7pt43SuXrYVbvtTum3jdINEAAAAAAAAAAAAAAAAAAAAABBXdoqtJmZnWnAZ97s4priIyRU2kxGqZhqTTE+DzoRlHIGbpqvNPM01Xmnm0uhGUcjoRlHIGbpqvNPM01Xmnm0uhGUcjoRlHIGbpqvNPM01Xmnm0uhGUcjoRlHIGbpqvNPM01Xmnm0uhGUcjoRlHIGZNrVMYTMzxSXPbxxX+hGUcnsUxlHIHoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/9k=';
 
 

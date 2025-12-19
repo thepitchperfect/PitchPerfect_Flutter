@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // } else {
             // Navigator.push(
               // context,
-              // MaterialPageRoute(builder: (context) => const ForumHomePage()),/// change this
+              // MaterialPageRoute(builder: (context) => const LoginPage()),/// change this
             // );
           },
         // },

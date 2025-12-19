@@ -16,7 +16,7 @@ class ForumEntry {
   String author;
   DateTime createdAt;
   DateTime updatedAt;
-  List<String> clubs;
+  List<dynamic> clubs;
   List<Image> images;
   List<Comment> comments;
 
@@ -41,7 +41,7 @@ class ForumEntry {
     author: json["author"],
     createdAt: DateTime.parse(json["created_at"]),
     updatedAt: DateTime.parse(json["updated_at"]),
-    clubs: List<String>.from(json["clubs"].map((x) => x)),
+    clubs: List<dynamic>.from(json["clubs"].map((x) => x)),
     images: List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
     comments: List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
   );
