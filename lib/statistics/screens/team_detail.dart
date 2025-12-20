@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/statistics_service.dart';
 import '../models/team_statistic.dart';
 import '../models/club_ranking.dart';
-import '../models/award.dart';
 
 class TeamDetailPage extends StatefulWidget {
   final String clubId;

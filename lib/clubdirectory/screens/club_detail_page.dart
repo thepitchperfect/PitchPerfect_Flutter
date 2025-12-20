@@ -3,7 +3,6 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart'; // Make sure to add this to pubspec
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:convert';
 import '../models/club_model.dart';
 
 class ClubDetailPage extends StatefulWidget {

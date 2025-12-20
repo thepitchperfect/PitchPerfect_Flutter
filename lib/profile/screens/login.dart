@@ -5,8 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Import your target page (Profile or Main)
-import 'profile_page.dart';
-import 'register.dart';
+import 'package:pitch_perfect_flutter/profile/screens/register.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

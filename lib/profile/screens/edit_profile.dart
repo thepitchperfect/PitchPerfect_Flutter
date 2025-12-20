@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io'; // Needed for File and Platform checks
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;

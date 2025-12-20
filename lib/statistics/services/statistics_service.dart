@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import '../models/team_statistic.dart';
-import '../models/club_ranking.dart';
 import '../models/vote_models.dart';
-import '../models/award.dart';
 
 class StatisticsService {
   // Use 127.0.0.1 for Web/iOS, 10.0.2.2 for Android Emulator

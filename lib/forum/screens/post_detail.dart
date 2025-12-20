@@ -1,6 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
