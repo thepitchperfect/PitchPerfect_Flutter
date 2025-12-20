@@ -36,12 +36,12 @@ class ForumEntry {
 
   factory ForumEntry.fromJson(Map<String, dynamic> json) => ForumEntry(
     id: json["id"],
-    title: json["title"],
-    content: json["content"],
-    postType: json["post_type"],
-    author: json["author"],
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
+    title: json["title"] ?? 'No Title',
+    content: json["content"] ?? '',
+    postType: json["post_type"] ?? 'Discussion',
+    author: json["author"] ?? 'Unknown Author',
+    createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
+    updatedAt: json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : DateTime.now(),
     clubs: List<Club>.from(json["clubs"].map((x) => Club.fromJson(x))),
     images: List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
     comments: List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
@@ -73,15 +73,21 @@ class Comment {
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) {
-    // Handle both String and Map types for author for robustness
-    final authorName = json["author"] is String
-        ? json["author"]
-        : (json["author"] is Map ? json["author"]["username"] : "Unknown");
+    final authorData = json["author"];
+    String authorName;
+
+    if (authorData is String) {
+      authorName = authorData;
+    } else if (authorData is Map && authorData.containsKey("username") && authorData["username"] != null) {
+      authorName = authorData["username"];
+    } else {
+      authorName = "Unknown Author";
+    }
 
     return Comment(
       author: authorName,
-      content: json["content"],
-      createdAt: DateTime.parse(json["created_at"]),
+      content: json["content"] ?? "",
+      createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
     );
   }
 
@@ -104,9 +110,9 @@ class Image {
   });
 
   factory Image.fromJson(Map<String, dynamic> json) => Image(
-    url: json["url"],
-    caption: json["caption"],
-    order: json["order"],
+    url: json["url"] ?? '',
+    caption: json["caption"] ?? '',
+    order: json["order"] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {

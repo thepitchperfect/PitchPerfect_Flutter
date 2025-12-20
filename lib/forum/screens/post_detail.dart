@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -61,7 +62,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Post Details'),
+        title: Text(
+          widget.post.title,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
       ),
@@ -188,6 +195,102 @@ class _PostDetailPageState extends State<PostDetailPage> {
             ),
             const Divider(height: 40, thickness: 1),
 
+            // Add Comment Form
+            //if (request.loggedIn)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Add a Comment', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
+                const SizedBox(height: 12.0),
+                TextField(
+                  controller: _commentController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Your comment'),
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 8.0),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    ),
+                    onPressed: () async {
+                      final content = _commentController.text;
+                      if (content.isNotEmpty) {
+                        // ======== BYPASS TEST USER =========
+                        try {
+                          final Map<String, dynamic> requestBody = {
+                            'content': content,
+                          };
+
+                          final response = await http.post(
+                            Uri.parse('$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/'),
+                            headers: {"Content-Type": "application/json"},
+                            body: jsonEncode(requestBody),
+                          );
+
+                          final responseData = jsonDecode(response.body);
+
+                          if ((response.statusCode == 200 || response.statusCode == 201) && responseData['status'] == 'success') {
+                            setState(() {
+                              widget.post.comments.add(forum_model.Comment.fromJson(responseData['comment']));
+                              _commentController.clear();
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Comment added successfully!"),
+                              backgroundColor: Colors.green,
+                            ));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Error: ${responseData['message'] ?? 'Failed to add comment'}"),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("An unexpected error occurred: $e"),
+                            backgroundColor: Colors.red,
+                          ));
+                        }
+
+
+                        //print($user_id: request.jsonData['id'], $content: content);
+                        // final response = await request.post(
+                        //   '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
+                        //   {
+                        //     'content': content,
+                        //   },
+                        // );
+                        // if (response['status'] == 'success') {
+                        //   setState(() {
+                        //     widget.post.comments.add(forum_model.Comment.fromJson(response['comment']));
+                        //     _commentController.clear();
+                        //   });
+                        //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        //     content: Text("Comment added successfully!"),
+                        //   ));
+                        // } else {
+                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        //     content: Text("Error: ${response['message'] ?? 'Failed to add comment'}"),
+                        //   ));
+                        // }
+                      }
+                    },
+                    child: const Text('Submit'), // Shortened text for a smaller button
+                  ),
+                ),
+              ],
+            ),
+            if (!request.loggedIn)
+            const Text('You must be logged in to add a comment.'),
+
+            const SizedBox(height: 24.0),
+
             // Comments Section
             Text(
               'Comments (${widget.post.comments.length})',
@@ -222,55 +325,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   );
                 },
               ),
-            const SizedBox(height: 24.0),
+            const SizedBox(height: 12.0),
 
-            // Add Comment Form
-            //if (request.loggedIn)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Add a Comment', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0)),
-                  const SizedBox(height: 12.0),
-                  TextField(
-                    controller: _commentController,
-                    decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Your comment'),
-                    maxLines: 4,
-                  ),
-                  const SizedBox(height: 12.0),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white),
-                    onPressed: () async {
-                      final content = _commentController.text;
-                      if (content.isNotEmpty) {
-                        final response = await request.post(
-                          '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/',
-                          {
-                              //'user_id': request.user!['id'],
-                            'content': content,
-                          },
-                        );
-
-                        if (response['status'] == 'success') {
-                          setState(() {
-                            widget.post.comments.add(forum_model.Comment.fromJson(response['comment']));
-                            _commentController.clear();
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Comment added successfully!"),
-                          ));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Error: ${response['message'] ?? 'Failed to add comment'}"),
-                          ));
-                        }
-                      }
-                    },
-                    child: const Text('Submit Comment'),
-                  ),
-                ],
-              ),
-            //if (!request.loggedIn)
-              const Text('You must be logged in to add a comment.'),
           ],
         ),
       ),
