@@ -1,8 +1,12 @@
+import 'dart:convert'; // [FIX 1] Required for jsonEncode
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pitch_perfect_flutter/profile/screens/login.dart'; // Adjust import to your actual file structure
+import 'package:pitch_perfect_flutter/profile/screens/login.dart'; // Adjust import path
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -21,12 +25,22 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _isLoading = false;
 
+  String get _baseUrl {
+    if (kIsWeb) {
+      return "http://localhost:8000";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "http://localhost:8000";
+  }
+
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Matches min-h-screen bg-gray-50
+      backgroundColor: Colors.grey[50],
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -42,7 +56,6 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // --- Title (font-orbitron) ---
                   Text(
                     'Register',
                     style: GoogleFonts.orbitron(
@@ -53,7 +66,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 30.0),
 
-                  // --- Username Input ---
                   _buildTextField(
                     controller: _usernameController,
                     label: 'Username',
@@ -61,7 +73,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // --- Full Name Input ---
                   _buildTextField(
                     controller: _fullNameController,
                     label: 'Full Name',
@@ -69,7 +80,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // --- Email Input ---
                   _buildTextField(
                     controller: _emailController,
                     label: 'Email',
@@ -78,7 +88,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // --- Password Input ---
                   _buildTextField(
                     controller: _passwordController,
                     label: 'Password',
@@ -87,7 +96,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // --- Confirm Password Input ---
                   _buildTextField(
                     controller: _confirmPasswordController,
                     label: 'Confirm Password',
@@ -108,107 +116,85 @@ class _RegisterPageState extends State<RegisterPage> {
                             String confirmPassword =
                                 _confirmPasswordController.text;
 
+                            // 1. Validation
                             if (username.isEmpty ||
                                 password.isEmpty ||
                                 fullName.isEmpty ||
                                 email.isEmpty) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Validation Error'),
-                                  content: const Text(
-                                    'All fields are required.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ],
-                                ),
+                              _showDialog(
+                                'Validation Error',
+                                'All fields are required.',
                               );
                               return;
                             }
 
                             if (password != confirmPassword) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Validation Error'),
-                                  content: const Text(
-                                    'Passwords do not match.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ],
-                                ),
+                              _showDialog(
+                                'Validation Error',
+                                'Passwords do not match.',
                               );
                               return;
                             }
 
                             setState(() => _isLoading = true);
 
-                            // 1. Send Request to Django
-                            // Note: Use request.postJson because your view uses json.loads(request.body)
-                            final response = await request.postJson(
-                              "http://127.0.0.1:8000/auth/register/",
-                              {
-                                'username': username,
-                                'full_name': fullName,
-                                'email': email,
-                                'password1': password,
-                                'password2': confirmPassword,
-                              },
-                            );
-
-                            if (!context.mounted) return;
-
-                            if (response['status'] == 'success') {
-                              // 2. Success Logic
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Account created successfully! Please login.",
-                                  ),
-                                  backgroundColor: Colors.green,
-                                ),
+                            try {
+                              // [FIX 2] Use jsonEncode to convert the Map to a JSON String
+                              final response = await request.postJson(
+                                "$_baseUrl/auth/register/",
+                                jsonEncode({
+                                  'username': username,
+                                  'full_name': fullName,
+                                  'email': email,
+                                  'password1': password,
+                                  'password2': confirmPassword,
+                                }),
                               );
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                              );
-                            } else {
-                              // 3. Error Logic
-                              setState(() => _isLoading = false);
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Registration Failed'),
-                                  content: Text(
-                                    response['message'] ?? "Unknown error",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () => Navigator.pop(context),
+
+                              if (!context.mounted) return;
+
+                              if (response['status'] == 'success') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Account created successfully! Please login.",
                                     ),
-                                  ],
-                                ),
-                              );
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginPage(),
+                                  ),
+                                );
+                              } else {
+                                _showDialog(
+                                  'Registration Failed',
+                                  response['message'] ?? "Unknown error",
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                // This catches the HTML error if it still happens
+                                _showDialog(
+                                  'Connection Error',
+                                  "Could not connect to server.\nError: $e",
+                                );
+                              }
+                            } finally {
+                              if (context.mounted) {
+                                setState(() => _isLoading = false);
+                              }
                             }
                           },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFFFE8800), // bg-[#FE8800]
+                      backgroundColor: const Color(0xFFFE8800),
                       minimumSize: const Size(double.infinity, 50),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50), // rounded-full
+                        borderRadius: BorderRadius.circular(50),
                       ),
                       textStyle: const TextStyle(
                         fontSize: 18,
@@ -222,7 +208,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const SizedBox(height: 24.0),
 
-                  // --- Login Link ---
                   GestureDetector(
                     onTap: () {
                       Navigator.pushReplacement(
@@ -260,7 +245,22 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Helper widget to keep the code clean and consistent
+  void _showDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,

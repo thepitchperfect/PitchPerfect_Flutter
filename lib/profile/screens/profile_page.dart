@@ -1,6 +1,13 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pitch_perfect_flutter/clubdirectory/models/club_model.dart';
+import 'package:pitch_perfect_flutter/clubdirectory/widgets/club_card.dart';
+import 'package:pitch_perfect_flutter/matchprediction/models/matchpredictionmodel.dart';
 import 'package:pitch_perfect_flutter/profile/screens/edit_profile.dart';
+import 'package:pitch_perfect_flutter/profile/widgets/prediction_card.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
@@ -22,19 +29,37 @@ class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  String get _baseUrl {
+    if (kIsWeb) {
+      return "http://localhost:8000";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "http://localhost:8000";
+  }
+
   // Futures to hold state
   late Future<Profile> _futureProfile;
+  late Future<List<Club>> _futurePicks;
   late Future<List<ForumEntry>> _futurePosts;
+  late Future<List<Matchprediction>> _futurePredictions;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-
-    // Initial fetch (Safe to read provider here)
-    final request = context.read<CookieRequest>();
-    _futureProfile = fetchProfile(request);
-    _futurePosts = fetchPosts(request);
+    // Defer the fetch to the first frame callback or use didChangeDependencies
+    // to safely access the Provider.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshData();
+    });
+    // Initialize with empty futures to prevent "LateInitializationError"
+    // before the first frame renders.
+    _futureProfile = Future.error("Loading...");
+    _futurePicks = Future.value([]);
+    _futurePosts = Future.value([]);
+    _futurePredictions = Future.value([]);
   }
 
   @override
@@ -55,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage>
   // --- API: FETCH PROFILE ---
   Future<Profile> fetchProfile(CookieRequest request) async {
     // 1. Fetch data
-    final response = await request.get('http://127.0.0.1:8000/auth/profile/');
+    final response = await request.get('$_baseUrl/auth/profile/');
 
     var data = response;
     Profile profile;
@@ -82,11 +107,11 @@ class _ProfilePageState extends State<ProfilePage>
 
   // --- API: FETCH POSTS ---
   Future<List<ForumEntry>> fetchPosts(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/forum/');
+    final response = await request.get('$_baseUrl/forum/json');
     List<ForumEntry> listPosts = [];
-    for (var d in response) {
-      if (d != null) {
-        listPosts.add(ForumEntry.fromJson(d));
+    for (var items in response) {
+      if (items != null) {
+        listPosts.add(ForumEntry.fromJson(items));
       }
     }
     return listPosts;
@@ -164,6 +189,12 @@ class _ProfilePageState extends State<ProfilePage>
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
+                    unselectedLabelStyle: GoogleFonts.lato(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    padding: EdgeInsets.zero,
                     tabs: const [
                       Tab(text: "League Picks"),
                       Tab(text: "Posts"),
@@ -178,7 +209,42 @@ class _ProfilePageState extends State<ProfilePage>
                     controller: _tabController,
                     children: [
                       // Tab 1: League Picks (Placeholder)
-                      const Center(child: Text("League picks coming soon...")),
+                      FutureBuilder<List<Club>>(
+                        future: _futurePicks,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text("Error: ${snapshot.error}"),
+                            );
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(
+                              child: Text("No club picked yet."),
+                            );
+                          }
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final club = snapshot.data![index];
+
+                              return ClubCard(
+                                club: club,
+                                // Since we mapped the league name to 'description' in fetchClubPicks
+                                leagueName:
+                                    club.description ?? "Unknown League",
+                                // We don't have a real league ID from the simplified API, so we pass a placeholder or empty string
+                                leagueId: "0",
+                              );
+                            },
+                          );
+                        },
+                      ),
 
                       // Tab 2: Posts (Inner FutureBuilder)
                       FutureBuilder<List<ForumEntry>>(
@@ -208,7 +274,34 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
 
                       // Tab 3: Predictions (Placeholder)
-                      const Center(child: Text("Predictions coming soon...")),
+                      FutureBuilder<List<Matchprediction>>(
+                        future: _futurePredictions,
+                        builder: (context, postSnapshot) {
+                          if (postSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (postSnapshot.hasError) {
+                            return Center(
+                              child: Text("Error: ${postSnapshot.error}"),
+                            );
+                          } else if (!postSnapshot.hasData ||
+                              postSnapshot.data!.isEmpty) {
+                            return const Center(
+                              child: Text("No predictions made yet."),
+                            );
+                          }
+
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: postSnapshot.data!.length,
+                            itemBuilder: (context, index) => PredictionCard(
+                              prediction: postSnapshot.data![index],
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),

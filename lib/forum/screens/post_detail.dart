@@ -258,7 +258,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
 
                         // print($user_id: request.jsonData['id'], $content: content);
-                        final response = await request.post(
+                        final response = await request.postJson(
                           '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
                           {
                             'content': content,

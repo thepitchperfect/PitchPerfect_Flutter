@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:pitch_perfect_flutter/main.dart';
@@ -19,6 +22,16 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
+    String get _baseUrl {
+    if (kIsWeb) {
+      return "http://localhost:8000";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "http://localhost:8000";
+  }
+  
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
@@ -106,63 +119,58 @@ class _LoginPageState extends State<LoginPage> {
 
                   // --- Login Button ---
                   ElevatedButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () async {
-                            setState(() => _isLoading = true);
-                            String username = _usernameController.text;
-                            String password = _passwordController.text;
+                    onPressed: () async {
+                      String username = _usernameController.text;
+                      String password = _passwordController.text;
 
-                            // 1. URL Setup (Use 10.0.2.2 for Android Emulator)
-                            final response = await request.login(
-                              "http://127.0.0.1:8000/auth/login/",
-                              {'username': username, 'password': password},
-                            );
+                      // 1. URL Setup (Use 10.0.2.2 for Android Emulator)
+                      final response = await request.login(
+                        "$_baseUrl/auth/login/",
+                        {'username': username, 'password': password},
+                      );
 
-                            if (!context.mounted) return;
+                      if (!context.mounted) return;
 
-                            if (request.loggedIn) {
-                              String message = response['message'];
-                              String uname = response['username'];
+                      if (request.loggedIn) {
+                        String message = response['message'];
+                        String uname = response['username'];
 
-                              // 2. Success Logic
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const MainPage(),
+                        // 2. Success Logic
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MainPage(),
+                          ),
+                        );
+
+                        ScaffoldMessenger.of(context)
+                          ..hideCurrentSnackBar()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text("$message Welcome, $uname."),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                      } else {
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Login Failed'),
+                              content: Text(response['message']),
+                              actions: [
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                 ),
-                              );
-
-                              ScaffoldMessenger.of(context)
-                                ..hideCurrentSnackBar()
-                                ..showSnackBar(
-                                  SnackBar(
-                                    content: Text("$message Welcome, $uname."),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                            } else {
-                              // 3. Failure Logic (Using AlertDialog as requested)
-                              setState(() => _isLoading = false);
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Login Failed'),
-                                  content: Text(
-                                    response['message'] ?? "Unknown error",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          },
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color(0xFFFE8800), // Theme Color

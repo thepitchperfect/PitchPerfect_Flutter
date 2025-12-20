@@ -53,12 +53,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
-
     // Helper logic for image display
     String? currentPicUrl = widget.user.profpict;
     if (currentPicUrl != null && !currentPicUrl.startsWith('http')) {
@@ -232,65 +228,71 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 setState(() => _isLoading = true);
 
                                 try {
-                                  // 0. GET THE REQUEST OBJECT (Ensure this exists)
-                                  // Assuming you are using Provider:
-                                  // final request = context.read<CookieRequest>();
+                                  final request = context.read<CookieRequest>();
 
-                                  // 1. Prepare URL
+                                  // DEBUG: Check if we actually have cookies to send
+                                  print("Is Logged In: ${request.loggedIn}");
+                                  print(
+                                    "Cookies available: ${request.cookies.keys}",
+                                  );
+
                                   final url = Uri.parse(
                                     "$_baseUrl/auth/profile/edit/",
                                   );
 
-                                  // 2. Prepare Request
+                                  // 1. Create Request
                                   final multipartRequest =
                                       http.MultipartRequest('POST', url);
 
-                                  // Add Fields
+                                  // 2. Add Fields
                                   multipartRequest.fields['full_name'] =
                                       newName;
                                   multipartRequest.fields['email'] = newEmail;
 
-                                  // Add File (if present)
+                                  // 3. Add File
                                   if (_imageFile != null) {
                                     final Uint8List imageBytes =
                                         await _imageFile!.readAsBytes();
                                     final multipartFile =
                                         http.MultipartFile.fromBytes(
-                                          'profpict', // Make sure this matches Django field name exactly
+                                          'profpict',
                                           imageBytes,
                                           filename: _imageFile!.name,
                                         );
                                     multipartRequest.files.add(multipartFile);
                                   }
 
-                                  // 3. FIX AUTHENTICATION & HEADERS
-
-                                  // A. Copy existing headers
+                                  // 4. AUTHENTICATION (The Fix)
+                                  // We prefer the headers from the provider as they are pre-formatted
                                   Map<String, String> headers = Map.from(
                                     request.headers,
                                   );
 
-                                  // B. Safe "Content-Type" removal (handles 'content-type' and 'Content-Type')
-                                  headers.removeWhere(
-                                    (key, value) =>
-                                        key.toLowerCase() == "content-type",
-                                  );
-
-                                  // C. MANUALLY INSERT COOKIES
-                                  // This bridges the gap between pbp_django_auth and http.MultipartRequest
-                                  if (request.cookies.isNotEmpty) {
-                                    // Create a raw Cookie string (e.g., "sessionid=xyz; csrftoken=abc")
+                                  // If 'Cookie' header is missing but we have cookies in the map, construct it manually
+                                  if (headers['cookie'] == null &&
+                                      request.cookies.isNotEmpty) {
                                     String cookieHeader = request
                                         .cookies
                                         .entries
                                         .map((e) => "${e.key}=${e.value}")
                                         .join("; ");
-                                    headers['Cookie'] = cookieHeader;
+                                    headers['cookie'] = cookieHeader;
                                   }
+
+                                  // Remove content-type so MultipartRequest can set its own boundary
+                                  headers.removeWhere(
+                                    (key, value) =>
+                                        key.toLowerCase() == "content-type",
+                                  );
 
                                   multipartRequest.headers.addAll(headers);
 
-                                  // 4. Send
+                                  // DEBUG: Print headers to ensure 'cookie' (with sessionid) is present
+                                  print(
+                                    "Sending Headers: ${multipartRequest.headers}",
+                                  );
+
+                                  // 5. Send
                                   final streamedResponse =
                                       await multipartRequest.send();
                                   final response = await http
@@ -300,17 +302,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     setState(() => _isLoading = false);
 
                                     if (response.statusCode == 200) {
+                                      // Success!
                                       Navigator.pop(context, true);
+                                    } else if (response.statusCode == 302) {
+                                      // HANDLE 302: This specifically catches the Login Redirect
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Session expired. Please login again.",
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      // Optional: Navigate user back to login page here
                                     } else {
-                                      // ... (Error handling logic remains the same) ...
-                                      String errMessage =
-                                          "Update failed: ${response.statusCode}";
-                                      // ...
+                                      print("Server Error: ${response.body}");
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-                                          content: Text(errMessage),
+                                          content: Text(
+                                            "Error: ${response.statusCode}. Check logs.",
+                                          ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
