@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:pitch_perfect_flutter/profile/screens/profile_page.dart';
+import 'package:pitch_perfect_flutter/statistics/screens/statistics_home.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'clubdirectory/screens/club_directory_page.dart';
+import 'matchprediction/screens/matchprediction_main.dart';
 import 'package:pitch_perfect_flutter/forum/screens/menu.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -91,8 +93,8 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = [
     const ClubDirectoryPage(),
-    const Center(child: Text("Stats Module")),
-    const Center(child: Text("Match Predictions")),
+    const StatisticsHomePage(),
+    const MatchPredictionMain(),
     const ForumHomePage(),
     const ProfilePage(),
   ];
