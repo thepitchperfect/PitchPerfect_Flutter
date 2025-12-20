@@ -3,6 +3,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'clubdirectory/screens/club_directory_page.dart';
+import 'matchprediction/screens/matchprediction_main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -88,7 +89,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = [
     const ClubDirectoryPage(),
     const Center(child: Text("Stats Module")), 
-    const Center(child: Text("Match Predictions")), 
+    const MatchPredictionMain(), 
     const Center(child: Text("Forum")), 
     const Center(child: Text("Profile")), 
   ];
