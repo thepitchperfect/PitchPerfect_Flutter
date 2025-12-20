@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:pitch_perfect_flutter/profile/screens/login.dart';
+import 'package:pitch_perfect_flutter/profile/screens/profile_page.dart';
+import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,116 +12,179 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return Provider<CookieRequest>(
+      create: (_) => CookieRequest(),
+      child: MaterialApp(
+        title: 'PitchPerfect',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          // 1. COLOR PALETTE (International White & Navy)
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF1E293B), // Navy (Slate 800)
+            secondary: Color(0xFFF97316), // Orange
+            surface: Color(0xFFF8FAFC), // Ultra Light Grey (Slate 50)
+            background: Color(0xFFF8FAFC),
+            onSurface: Color(0xFF1E293B),
+          ),
+
+          // 2. TYPOGRAPHY (The Secret Sauce)
+          textTheme: TextTheme(
+            // Headers = Orbitron (Futuristic/Sports)
+            displayLarge: GoogleFonts.orbitron(
+              fontWeight: FontWeight.w900,
+              letterSpacing: -1.0,
+              color: const Color(0xFF1E293B),
+            ),
+            displayMedium: GoogleFonts.orbitron(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+              color: const Color(0xFF1E293B),
+            ),
+            displaySmall: GoogleFonts.orbitron(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1E293B),
+            ),
+            headlineMedium: GoogleFonts.orbitron(
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1E293B),
+            ),
+
+            // Body = Lato (Clean/Readable)
+            bodyLarge: GoogleFonts.lato(
+              fontSize: 16,
+              color: const Color(0xFF334155),
+            ),
+            bodyMedium: GoogleFonts.lato(
+              fontSize: 14,
+              color: const Color(0xFF475569),
+            ),
+            labelLarge: GoogleFonts.tektur(
+              fontWeight: FontWeight.bold,
+            ), // Buttons
+          ),
+
+          useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+
+          // 3. COMPONENT THEMES
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF1E293B),
+            elevation: 0,
+            centerTitle: false,
+            titleTextStyle: GoogleFonts.orbitron(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.0,
+              color: const Color(0xFF1E293B),
+            ),
+          ),
+
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF97316),
+              foregroundColor: Colors.white,
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              textStyle: GoogleFonts.tektur(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+        home: const LoginPage(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _MainPageState extends State<MainPage> {
+  int _selectedIndex = 0;
 
-  void _incrementCounter() {
+  final List<Widget> _pages = [
+    const Center(child: Text("Club Dir")),
+    const Center(child: Text("Stats Module")),
+    const Center(child: Text("Match Predictions")),
+    const Center(child: Text("Forum")),
+    const ProfilePage(),
+  ];
+
+  void _onItemTapped(int index) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: _pages[_selectedIndex],
+      // UNIVERSAL NAVBAR (Kept as requested)
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFFF97316),
+          unselectedItemColor: Colors.grey.shade400,
+          showUnselectedLabels: true,
+          selectedLabelStyle: GoogleFonts.tektur(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+          unselectedLabelStyle: GoogleFonts.lato(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+          elevation: 0,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shield_outlined),
+              activeIcon: Icon(Icons.shield),
+              label: 'Directory',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: 'Stats',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.sports_soccer),
+              label: 'Matches',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.forum_outlined),
+              label: 'Forum',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              label: 'Profile',
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
