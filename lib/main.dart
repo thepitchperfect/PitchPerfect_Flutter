@@ -100,6 +100,7 @@ class _MainPageState extends State<MainPage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _selectedIndex = index;
     });
   }
 
