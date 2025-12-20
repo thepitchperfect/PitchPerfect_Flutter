@@ -48,9 +48,9 @@ class DiscussionCard extends StatelessWidget {
       },
       child: Card(
         elevation: 2.0,
-        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(0.0),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),

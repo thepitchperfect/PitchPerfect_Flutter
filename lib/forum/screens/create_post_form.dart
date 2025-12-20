@@ -292,7 +292,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("Post created successfully!"),
-                            backgroundColor: Colors.green, // Good practice to color-code success
+                            backgroundColor: Colors.green,
                           ),
                         );
                       } else {
