@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 import 'package:pitch_perfect_flutter/profile/screens/profile_page.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'clubdirectory/screens/club_directory_page.dart';
+import 'package:pitch_perfect_flutter/forum/screens/menu.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,37 +35,15 @@ class MyApp extends StatelessWidget {
           // 2. TYPOGRAPHY (The Secret Sauce)
           textTheme: TextTheme(
             // Headers = Orbitron (Futuristic/Sports)
-            displayLarge: GoogleFonts.orbitron(
-              fontWeight: FontWeight.w900,
-              letterSpacing: -1.0,
-              color: const Color(0xFF1E293B),
-            ),
-            displayMedium: GoogleFonts.orbitron(
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-              color: const Color(0xFF1E293B),
-            ),
-            displaySmall: GoogleFonts.orbitron(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E293B),
-            ),
-            headlineMedium: GoogleFonts.orbitron(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E293B),
-            ),
+            displayLarge: GoogleFonts.orbitron(fontWeight: FontWeight.w900, letterSpacing: -1.0, color: const Color(0xFF1E293B)),
+            displayMedium: GoogleFonts.orbitron(fontWeight: FontWeight.bold, letterSpacing: 0.5, color: const Color(0xFF1E293B)),
+            displaySmall: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
+            headlineMedium: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
 
             // Body = Lato (Clean/Readable)
-            bodyLarge: GoogleFonts.lato(
-              fontSize: 16,
-              color: const Color(0xFF334155),
-            ),
-            bodyMedium: GoogleFonts.lato(
-              fontSize: 14,
-              color: const Color(0xFF475569),
-            ),
-            labelLarge: GoogleFonts.tektur(
-              fontWeight: FontWeight.bold,
-            ), // Buttons
+            bodyLarge: GoogleFonts.lato(fontSize: 16, color: const Color(0xFF334155)),
+            bodyMedium: GoogleFonts.lato(fontSize: 14, color: const Color(0xFF475569)),
+            labelLarge: GoogleFonts.tektur(fontWeight: FontWeight.bold), // Buttons
           ),
 
           useMaterial3: true,
@@ -87,17 +68,12 @@ class MyApp extends StatelessWidget {
               backgroundColor: const Color(0xFFF97316),
               foregroundColor: Colors.white,
               elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              textStyle: GoogleFonts.tektur(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              textStyle: GoogleFonts.tektur(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ),
-        home: const LoginPage(),
+        home: const MainPage(),
       ),
     );
   }
@@ -114,10 +90,10 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const Center(child: Text("Club Dir")),
+    const ClubDirectoryPage(),
     const Center(child: Text("Stats Module")),
     const Center(child: Text("Match Predictions")),
-    const Center(child: Text("Forum")),
+    const ForumHomePage(),
     const ProfilePage(),
   ];
 
@@ -149,39 +125,17 @@ class _MainPageState extends State<MainPage> {
           selectedItemColor: const Color(0xFFF97316),
           unselectedItemColor: Colors.grey.shade400,
           showUnselectedLabels: true,
-          selectedLabelStyle: GoogleFonts.tektur(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-          unselectedLabelStyle: GoogleFonts.lato(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
+          selectedLabelStyle: GoogleFonts.tektur(fontSize: 10, fontWeight: FontWeight.bold),
+          unselectedLabelStyle: GoogleFonts.lato(fontSize: 10, fontWeight: FontWeight.bold),
           elevation: 0,
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shield_outlined),
-              activeIcon: Icon(Icons.shield),
-              label: 'Directory',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart),
-              label: 'Stats',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.sports_soccer),
-              label: 'Matches',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.forum_outlined),
-              label: 'Forum',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: 'Profile',
-            ),
+            BottomNavigationBarItem(icon: Icon(Icons.shield_outlined), activeIcon: Icon(Icons.shield), label: 'Directory'),
+            BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Stats'),
+            BottomNavigationBarItem(icon: Icon(Icons.sports_soccer), label: 'Matches'),
+            BottomNavigationBarItem(icon: Icon(Icons.forum_outlined), label: 'Forum'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
           ],
         ),
       ),

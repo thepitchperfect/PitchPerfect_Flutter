@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart'
-    as forum_model;
+import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart' as forum_model;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 import 'package:pitch_perfect_flutter/forum/screens/post_detail.dart';
@@ -36,20 +35,23 @@ class DiscussionCard extends StatelessWidget {
         : null;
 
     // Consider a post edited only if the difference is more than a second.
-    final bool isEdited =
-        post.updatedAt.difference(post.createdAt).inSeconds > 1;
+    final bool isEdited = post.updatedAt.difference(post.createdAt).inSeconds > 1;
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PostDetailPage(post: post)),
+          MaterialPageRoute(
+            builder: (context) => PostDetailPage(post: post),
+          ),
         );
       },
       child: Card(
         elevation: 2.0,
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0.0)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0.0),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -76,9 +78,7 @@ class DiscussionCard extends StatelessWidget {
                           TextSpan(
                             children: [
                               TextSpan(
-                                text: DateFormat('MMM d, yyyy').format(
-                                  isEdited ? post.updatedAt : post.createdAt,
-                                ),
+                                text: DateFormat('MMM d, yyyy').format(isEdited ? post.updatedAt : post.createdAt),
                               ),
                               if (isEdited)
                                 const TextSpan(
@@ -109,14 +109,8 @@ class DiscussionCard extends StatelessWidget {
                           height: 30,
                           width: 30,
                           errorBuilder: (context, error, stackTrace) {
-                            print(
-                              "Failed to load image: $logoUrl, Error: $error",
-                            );
-                            return const Icon(
-                              Icons.shield,
-                              size: 30,
-                              color: Colors.grey,
-                            );
+                            print("Failed to load image: $logoUrl, Error: $error");
+                            return const Icon(Icons.shield, size: 30, color: Colors.grey);
                           },
                         ),
                       );
