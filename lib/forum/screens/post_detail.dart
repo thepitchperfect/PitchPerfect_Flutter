@@ -196,7 +196,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             const Divider(height: 40, thickness: 1),
 
             // Add Comment Form
-            //if (request.loggedIn)
+            if (request.loggedIn)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -223,65 +223,67 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       final content = _commentController.text;
                       if (content.isNotEmpty) {
                         // ======== BYPASS TEST USER =========
-                        try {
-                          final Map<String, dynamic> requestBody = {
+                        // try {
+                        //   final Map<String, dynamic> requestBody = {
+                        //     'content': content,
+                        //   };
+                        //
+                        //   final response = await http.post(
+                        //     Uri.parse('$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/'),
+                        //     headers: {"Content-Type": "application/json"},
+                        //     body: jsonEncode(requestBody),
+                        //   );
+                        //
+                        //   final responseData = jsonDecode(response.body);
+                        //
+                        //   if ((response.statusCode == 200 || response.statusCode == 201) && responseData['status'] == 'success') {
+                        //     setState(() {
+                        //       widget.post.comments.add(forum_model.Comment.fromJson(responseData['comment']));
+                        //       _commentController.clear();
+                        //     });
+                        //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        //       content: Text("Comment added successfully!"),
+                        //       backgroundColor: Colors.green,
+                        //     ));
+                        //   } else {
+                        //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        //       content: Text("Error: ${responseData['message'] ?? 'Failed to add comment'}"),
+                        //       backgroundColor: Colors.red,
+                        //     ));
+                        //   }
+                        // } catch (e) {
+                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        //     content: Text("An unexpected error occurred: $e"),
+                        //     backgroundColor: Colors.red,
+                        //   ));
+                        // }
+
+
+                        // print($user_id: request.jsonData['id'], $content: content);
+                        final response = await request.post(
+                          '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
+                          {
                             'content': content,
-                          };
-
-                          final response = await http.post(
-                            Uri.parse('$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/'),
-                            headers: {"Content-Type": "application/json"},
-                            body: jsonEncode(requestBody),
-                          );
-
-                          final responseData = jsonDecode(response.body);
-
-                          if ((response.statusCode == 200 || response.statusCode == 201) && responseData['status'] == 'success') {
-                            setState(() {
-                              widget.post.comments.add(forum_model.Comment.fromJson(responseData['comment']));
-                              _commentController.clear();
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text("Comment added successfully!"),
-                              backgroundColor: Colors.green,
-                            ));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Error: ${responseData['message'] ?? 'Failed to add comment'}"),
-                              backgroundColor: Colors.red,
-                            ));
-                          }
-                        } catch (e) {
+                          },
+                        );
+                        if (response['status'] == 'success') {
+                          setState(() {
+                            widget.post.comments.add(forum_model.Comment.fromJson(response['comment']));
+                            _commentController.clear();
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text("Comment added successfully!"),
+                            backgroundColor: Colors.green,
+                          ));
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("An unexpected error occurred: $e"),
+                            content: Text("Error: ${response['message'] ?? 'Failed to add comment'}"),
                             backgroundColor: Colors.red,
                           ));
                         }
-
-
-                        //print($user_id: request.jsonData['id'], $content: content);
-                        // final response = await request.post(
-                        //   '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
-                        //   {
-                        //     'content': content,
-                        //   },
-                        // );
-                        // if (response['status'] == 'success') {
-                        //   setState(() {
-                        //     widget.post.comments.add(forum_model.Comment.fromJson(response['comment']));
-                        //     _commentController.clear();
-                        //   });
-                        //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        //     content: Text("Comment added successfully!"),
-                        //   ));
-                        // } else {
-                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        //     content: Text("Error: ${response['message'] ?? 'Failed to add comment'}"),
-                        //   ));
-                        // }
                       }
                     },
-                    child: const Text('Submit'), // Shortened text for a smaller button
+                    child: const Text('Submit'),
                   ),
                 ),
               ],

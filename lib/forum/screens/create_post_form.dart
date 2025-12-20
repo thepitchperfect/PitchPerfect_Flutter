@@ -123,6 +123,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     final bool isAdmin = request.loggedIn ? request.jsonData['is_staff'] ?? false : false;
+    // const bool isAdmin = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -256,38 +257,38 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       final List<String> imageCaptions = _captionControllers.map((controller) => controller.text).toList();
 
                       // TEST USER
-                      final Map<String, dynamic> requestBody = {
-                        'title': _title,
-                        'content': _content,
-                        'post_type': _postType,
-                        'clubs': _selectedClubs.map((c) => c.id).toList(),
-                        'image_urls': imageUrls,
-                        'image_captions': imageCaptions,
-                      };
+                      // final Map<String, dynamic> requestBody = {
+                      //   'title': _title,
+                      //   'content': _content,
+                      //   'post_type': _postType,
+                      //   'clubs': _selectedClubs.map((c) => c.id).toList(),
+                      //   'image_urls': imageUrls,
+                      //   'image_captions': imageCaptions,
+                      // };
+                      //
+                      // // 2. Use a standard http.post request instead of request.postJson
+                      // final response = await http.post(
+                      //   Uri.parse("$_baseUrl/forum/api/post/create/flutter/"),
+                      //   headers: {"Content-Type": "application/json"},
+                      //   body: jsonEncode(requestBody),
+                      // );
+                      //
+                      // // 3. Decode the response from the server.
+                      // final responseData = jsonDecode(response.body);
 
-                      // 2. Use a standard http.post request instead of request.postJson
-                      final response = await http.post(
-                        Uri.parse("$_baseUrl/forum/api/post/create/flutter/"),
-                        headers: {"Content-Type": "application/json"},
-                        body: jsonEncode(requestBody),
-                      );
 
-                      // 3. Decode the response from the server.
-                      final responseData = jsonDecode(response.body);
+                      final response = await request.postJson(
+                          "$_baseUrl/forum/api/post/create/flutter/",
+                          jsonEncode(<String, dynamic>{
+                            'title': _title,
+                            'content': _content,
+                            'post_type': _postType,
+                            'clubs': _selectedClubs.map((c) => c.id).toList(),
+                            'image_urls': imageUrls,
+                            'image_captions': imageCaptions,
+                          }));
 
-
-                      // final response = await request.postJson(
-                      //     "$_baseUrl/forum/api/post/create/flutter/",
-                      //     jsonEncode(<String, dynamic>{
-                      //       'title': _title,
-                      //       'content': _content,
-                      //       'post_type': _postType,
-                      //       'clubs': _selectedClubs.map((c) => c.id).toList(),
-                      //       'image_urls': imageUrls,
-                      //       'image_captions': imageCaptions,
-                      //     }));
-
-                      if ((response.statusCode == 200 || response.statusCode == 201) && responseData['success'] == true) {
+                      if (response['success'] == true) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -296,14 +297,31 @@ class _CreatePostFormState extends State<CreatePostForm> {
                           ),
                         );
                       } else {
-                        // Display the actual error message from the backend.
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Error: ${responseData['error'] ?? 'An unknown error occurred'}"),
+                            content: Text("Error: ${response['error'] ?? 'An unknown error occurred'}"),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
+
+                      // if ((response.statusCode == 200 || response.statusCode == 201) && responseData['success'] == true) {
+                      //   Navigator.pop(context);
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     const SnackBar(
+                      //       content: Text("Post created successfully!"),
+                      //       backgroundColor: Colors.green,
+                      //     ),
+                      //   );
+                      // } else {
+                      //   // Display the actual error message from the backend.
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     SnackBar(
+                      //       content: Text("Error: ${responseData['error'] ?? 'An unknown error occurred'}"),
+                      //       backgroundColor: Colors.red,
+                      //     ),
+                      //   );
+                      // }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("An unexpected error occurred: $e")));
                     }

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -62,9 +64,17 @@ class _MyHomePageState extends State<MyHomePage> {
     if (mounted) {
       setState(() {
         _isAdmin = userData['is_staff'] ?? false;
+
+        // --- START OF FLUTTER BYPASS ---
+        // For testing purposes, temporarily set _isAdmin to true.
+        // This will make the "News" option appear in the CreatePostForm dropdown.
+        // REMEMBER to undo this when authentication is implemented!
+        // _isAdmin = true;
+        // --- END OF FLUTTER BYPASS ---
       });
     }
 
+    // ==== ACTUAL CODE ====
     final response = await request.get('http://localhost:8000/forum/json/');
     final List<forum_model.ForumEntry> entries = [];
     final Set<Club> clubs = {};
@@ -75,6 +85,20 @@ class _MyHomePageState extends State<MyHomePage> {
         clubs.addAll(entry.clubs);
       }
     }
+
+    // DELETE THIS LATER === BYPASS USER
+    // final response = await http.get(Uri.parse('http://localhost:8000/forum/json/'));
+    // final List<dynamic> responseData = json.decode(response.body); // Assuming the response is a direct list
+    // final List<forum_model.ForumEntry> entries = [];
+    // final Set<Club> clubs = {};
+    // for (var item in responseData) {
+    //   final entry = forum_model.ForumEntry.fromJson(item);
+    //   entries.add(entry);
+    //   if (entry.clubs.isNotEmpty) {
+    //     clubs.addAll(entry.clubs);
+    //   }
+    // }
+    // === END BYPASS USER ===
 
     if (mounted) {
       setState(() {
@@ -126,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     items: [
                       const DropdownMenuItem<Club>(
                         value: null,
-                        child: Text('All Clubs'),
+                        child: Text('Your Favourite Club'),
                       ),
                       ...filteredClubs.map((Club club) {
                         return DropdownMenuItem<Club>(
@@ -265,13 +289,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreatePostForm()),
-          );
-          setState(() {
-            _loadDataFuture = _fetchEntriesAndClubs();
-          });
+          final request = context.read<CookieRequest>();
+          if (request.loggedIn) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CreatePostForm()),
+            ).then((_) {
+              setState(() {
+                _loadDataFuture = _fetchEntriesAndClubs();
+              });
+            });
+          } else {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => const LoginPage()),
+            // );
+          }
         },
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(Icons.add, color: Colors.white),
