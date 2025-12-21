@@ -3,7 +3,7 @@
 [![Build Status](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/status.svg?token=CGTJLu2jyxKG8JG2qEOF-w&branch=master)](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802)
 
 ## Download
-Download the latest version of the application: [Download APK](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/installable-artifacts/6e47ff43cf5df17f/public-install-page/9413fd812f463f61a2ade96e5f28447c)
+Download the latest version of the application: [Download APK](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/installable-artifacts/fcb24171d1f52d66/public-install-page/5c6f0a41fc650274a601bb501300c9be)
 
 ## Group members
 - 2406365326 - Sultanadika Shidqi Mumtazsami
