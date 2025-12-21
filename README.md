@@ -3,7 +3,7 @@
 [![Build Status](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/status.svg?token=CGTJLu2jyxKG8JG2qEOF-w&branch=master)](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802)
 
 ## Download
-Download the latest version of the application: [Download APK] (https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/installable-artifacts/6e47ff43cf5df17f/public-install-page/9413fd812f463f61a2ade96e5f28447c)
+Download the latest version of the application: [Download APK](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/installable-artifacts/6e47ff43cf5df17f/public-install-page/9413fd812f463f61a2ade96e5f28447c)
 
 ## Group members
 - 2406365326 - Sultanadika Shidqi Mumtazsami
@@ -60,3 +60,4 @@ To solve this practically, we used the **pbp_django_auth** package. This acts as
 - Django GitHub: [Django GitHub Link](https://github.com/thepitchperfect/PerfectPitch)
 - Django PWS deployment: [Django PWS Deployment Link](arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id)
 - Figma Design: [Figma Design Link](https://www.figma.com/design/cEZoGfGJkYfyTcuJxowkNN/ThePitchPerfect?node-id=0-1&t=88G0BzMiWYsIi7Xc-1)
+- Promotional Video: [Promotional Video Link](https://drive.google.com/drive/folders/1fm6Ynr36JCN94fwfdOc-UwuKznxTfn8u?usp=drive_link)
