@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -41,10 +41,10 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
   // FETCH CLUB DIRECTORY
   // =========================
   Future<Map<String, Club>> fetchClubMap() async {
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
-
+    final baseUrl = kIsWeb
+        ? "http://localhost:8000"
+        : "http://10.0.2.2:8000";
+        
     final response =
         await http.get(Uri.parse("$baseUrl/directory/json/"));
 
@@ -499,9 +499,9 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     BuildContext context,
     String prediction,
   ) async {
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
+    final baseUrl = kIsWeb
+        ? "http://localhost:8000"
+        : "http://10.0.2.2:8000";
 
     final request = context.read<CookieRequest>();
 
@@ -526,9 +526,9 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
   }
 
 Future<void> _deleteVote() async {
-  final baseUrl = Platform.isAndroid
-      ? "http://10.0.2.2:8000"
-      : "http://localhost:8000";
+  final baseUrl = kIsWeb
+        ? "http://localhost:8000"
+        : "http://10.0.2.2:8000";
 
   final request = context.read<CookieRequest>();
 

@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +16,7 @@ class MatchPredictionForm extends StatefulWidget {
 
 class _MatchPredictionFormState
     extends State<MatchPredictionForm> {
-  // ---------------- FORM STATE ----------------
+  // FORM STATE
   String? selectedLeagueId;
   String? selectedHomeTeamId;
   String? selectedAwayTeamId;
@@ -31,13 +31,13 @@ class _MatchPredictionFormState
     _futureLeagues = fetchLeagues();
   }
 
-  // ---------------- FETCH LEAGUES ----------------
+  // FETCH THE LEAGUES
   Future<List<League>> fetchLeagues() async {
     final request = context.read<CookieRequest>();
 
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
+    final baseUrl = kIsWeb
+        ? "http://localhost:8000"
+        : "http://10.0.2.2:8000";
 
     final response =
         await request.get("$baseUrl/directory/json/");
@@ -50,7 +50,7 @@ class _MatchPredictionFormState
         .toList();
   }
 
-  // ---------------- SUBMIT (ADMIN ONLY) ----------------
+  // SUBMIT ADD MATCH FORM 
   Future<void> submitForm() async {
     if (selectedLeagueId == null ||
         selectedHomeTeamId == null ||
@@ -65,9 +65,9 @@ class _MatchPredictionFormState
 
     final request = context.read<CookieRequest>();
 
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
+    final baseUrl = kIsWeb
+        ? "http://localhost:8000"
+        : "http://10.0.2.2:8000";
 
     final response = await request.post(
       "$baseUrl/predictions/add/api/",
@@ -80,7 +80,7 @@ class _MatchPredictionFormState
       },
     );
 
-    // ✅ SUCCESS → tell previous screen to refresh
+    //  SUCCESS 
     if (response["status"] == "success") {
       Navigator.pop(context, true);
     } else {

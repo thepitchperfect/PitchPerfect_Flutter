@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -12,7 +12,7 @@ import '../widgets/matchprediction_card.dart';
 import '../../clubdirectory/models/club_model.dart';
 
 class MatchListScreen extends StatefulWidget {
-  final String leagueName; // 🔥 STABLE IDENTIFIER
+  final String leagueName;
   final String filterType;
   final String searchQuery;
 
@@ -30,6 +30,13 @@ class MatchListScreen extends StatefulWidget {
 class _MatchListScreenState extends State<MatchListScreen> {
   late Future<List<Matchprediction>> _futureMatches;
   late Future<Map<String, Club>> _futureClubMap;
+
+  String getBaseUrl() {
+    if (kIsWeb) {
+      return "http://localhost:8000";
+    }
+    return "http://10.0.2.2:8000";
+  }
 
   @override
   void initState() {
@@ -55,9 +62,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
   // 🔵 FETCH MATCHES (AUTH-AWARE)
   // ==============================
   Future<List<Matchprediction>> fetchMatches() async {
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
+    final baseUrl = getBaseUrl();
 
     final uri = Uri.parse("$baseUrl/predictions/json/").replace(
       queryParameters: {
@@ -66,15 +71,13 @@ class _MatchListScreenState extends State<MatchListScreen> {
       },
     );
 
-    // 🔥 IMPORTANT FIX: USE CookieRequest
     final request = context.read<CookieRequest>();
     final response = await request.get(uri.toString());
 
-    // CookieRequest.get() returns decoded JSON
     List<Matchprediction> matches =
         matchpredictionFromJson(jsonEncode(response));
 
-    // ✅ STABLE LEAGUE FILTER (NAME-BASED)
+    // 🔥 Stable league filter
     if (widget.leagueName.isNotEmpty) {
       matches = matches.where((m) {
         return m.league.name == widget.leagueName;
@@ -85,12 +88,10 @@ class _MatchListScreenState extends State<MatchListScreen> {
   }
 
   // ==============================
-  // 🔵 FETCH CLUB DIRECTORY (UNCHANGED)
+  // 🔵 FETCH CLUB DIRECTORY
   // ==============================
   Future<Map<String, Club>> fetchClubMap() async {
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
+    final baseUrl = getBaseUrl();
 
     final response =
         await http.get(Uri.parse("$baseUrl/directory/json/"));
@@ -124,7 +125,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
   }
 
   // ==============================
-  // 🔵 UI (UNCHANGED)
+  // 🔵 UI
   // ==============================
   @override
   Widget build(BuildContext context) {
@@ -152,8 +153,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
           builder: (context, matchSnapshot) {
             if (matchSnapshot.connectionState ==
                 ConnectionState.waiting) {
-              return const Center(
-                  child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (matchSnapshot.hasError) {
@@ -170,7 +170,8 @@ class _MatchListScreenState extends State<MatchListScreen> {
 
             if (matches.isEmpty) {
               return const Center(
-                  child: Text("No matches available"));
+                child: Text("No matches available"),
+              );
             }
 
             return ListView.builder(
