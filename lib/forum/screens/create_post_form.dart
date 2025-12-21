@@ -127,9 +127,9 @@ class _CreatePostFormState extends State<CreatePostForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Post'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
+        title: const Text('CREATE NEW POST'),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
@@ -249,7 +249,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
 
               // Submit Button
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16.0)),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF97316), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 16.0)),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     try {

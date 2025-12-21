@@ -232,16 +232,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Discussion Forum',
+          'DISCUSSION FORUM',
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1E293B),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.0,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.white),
+            icon: const Icon(Icons.filter_list, color: Color(0xFF1E293B)),
             onPressed: _showFilterBottomSheet,
           ),
         ],
@@ -323,7 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }
         },
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: const Color(0xFFF97316),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

@@ -129,7 +129,7 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
               width: double.infinity,
               padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
+                color: Colors.black.withOpacity(0.3),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(12.0),
                   bottomRight: Radius.circular(12.0),
@@ -153,7 +153,7 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
                     Container(
                       margin: const EdgeInsets.only(left: 8),
                       decoration: const BoxDecoration(
-                        color: Colors.black54,
+                        color: Colors.black38,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -164,7 +164,7 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
                     Container(
                       margin: const EdgeInsets.only(right: 8),
                       decoration: const BoxDecoration(
-                        color: Colors.black54,
+                        color: Colors.black38,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
