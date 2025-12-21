@@ -11,16 +11,13 @@ class DiscussionCard extends StatelessWidget {
   const DiscussionCard({super.key, required this.post});
 
   String get _baseUrl {
-    // For web, use localhost
     if (kIsWeb) {
-      return "http://localhost:8000";
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
     }
-    // For Android emulator, use 10.0.2.2
     if (Platform.isAndroid) {
       return "http://10.0.2.2:8000";
     }
-    // For other platforms (like iOS simulator), use localhost
-    return "http://localhost:8000";
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
 
   @override

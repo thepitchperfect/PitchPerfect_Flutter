@@ -6,11 +6,11 @@ import '../models/vote_models.dart';
 class StatisticsService {
   // Use 127.0.0.1 for Web/iOS, 10.0.2.2 for Android Emulator
   static String get baseUrl {
-    if (kIsWeb) return 'http://localhost:8000';
+    if (kIsWeb) return 'https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id';
     if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:8000';
     }
-    return 'http://localhost:8000';
+    return 'https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id';
   }
 
   static Future<Map<String, dynamic>> fetchGeneralStats(

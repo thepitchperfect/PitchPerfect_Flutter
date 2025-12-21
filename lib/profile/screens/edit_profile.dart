@@ -36,9 +36,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // --- 1. Helper for Dynamic URL (Crucial for Emulator) ---
   String get _baseUrl {
-    if (kIsWeb) return "http://localhost:8000";
-    if (Platform.isAndroid) return "http://10.0.2.2:8000";
-    return "http://localhost:8000";
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
 
   Future<void> _pickImage() async {
@@ -229,12 +233,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                 try {
                                   final request = context.read<CookieRequest>();
-
-                                  // DEBUG: Check if we actually have cookies to send
-                                  print("Is Logged In: ${request.loggedIn}");
-                                  print(
-                                    "Cookies available: ${request.cookies.keys}",
-                                  );
 
                                   final url = Uri.parse(
                                     "$_baseUrl/auth/profile/edit/",

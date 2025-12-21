@@ -10,9 +10,13 @@ class PostCard extends StatelessWidget {
 
   // 1. REUSE THIS LOGIC: This is critical for the app to work on Android Emulator
   String get _baseUrl {
-    if (kIsWeb) return "http://localhost:8000";
-    if (Platform.isAndroid) return "http://10.0.2.2:8000";
-    return "http://localhost:8000";
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
 
   @override

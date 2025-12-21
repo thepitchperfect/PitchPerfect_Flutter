@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,16 +30,21 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     _futureClubMap = fetchClubMap();
   }
 
+  String get _baseUrl {
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    } else if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+  }
+
   // ==============================
   // 🔵 FETCH CLUB DIRECTORY
   // ==============================
   Future<Map<String, Club>> fetchClubMap() async {
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
-
     final response =
-        await http.get(Uri.parse("$baseUrl/directory/json/"));
+        await http.get(Uri.parse("$_baseUrl/directory/json/"));
 
     if (response.statusCode != 200) {
       throw Exception("Failed to load club directory");
@@ -410,7 +416,7 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     BuildContext context, String prediction) async {
     final baseUrl = Platform.isAndroid
         ? "http://10.0.2.2:8000"
-        : "http://localhost:8000";
+        : "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id0";
 
     final url =
         Uri.parse("$baseUrl/predictions/vote/${widget.match.id}/");

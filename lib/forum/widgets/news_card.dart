@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pitch_perfect_flutter/forum/screens/post_detail.dart';
@@ -18,10 +19,12 @@ class _OfficialNewsCardState extends State<OfficialNewsCard> {
 
   String get _baseUrl {
     if (kIsWeb) {
-      return "http://localhost:8000";
-    } else {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
       return "http://10.0.2.2:8000";
     }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
 
   @override

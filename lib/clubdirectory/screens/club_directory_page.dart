@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +22,16 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
   
+  String get _baseUrl {
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+  }
+
   String? selectedLeagueId;
   String searchQuery = "";
   bool isSearchVisible = false;
@@ -31,7 +44,7 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
 
   Future<List<League>> fetchLeagues(CookieRequest request) async {
     // NOTE: Ensure this matches your Django environment (10.0.2.2 or 127.0.0.1)
-    final response = await request.get('http://127.0.0.1:8000/directory/json/');
+    final response = await request.get('$_baseUrl/directory/json/');
     List<League> listLeagues = [];
     if (response['leagues'] != null) {
       for (var d in response['leagues']) {

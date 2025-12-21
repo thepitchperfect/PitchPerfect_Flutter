@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pitch_perfect_flutter/clubdirectory/screens/club_directory_page.dart';
 import 'package:pitch_perfect_flutter/forum/screens/menu.dart';
-import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 import 'package:pitch_perfect_flutter/profile/screens/profile_page.dart';
 import 'package:pitch_perfect_flutter/statistics/screens/statistics_home.dart';
 import 'package:pitch_perfect_flutter/matchprediction/screens/matchprediction_main.dart';
@@ -74,7 +73,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const LoginPage(),
+        home: const MainPage(),
       ),
     );
   }

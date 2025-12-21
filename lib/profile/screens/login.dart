@@ -22,14 +22,14 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-    String get _baseUrl {
+  String get _baseUrl {
     if (kIsWeb) {
-      return "http://localhost:8000";
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
     }
     if (Platform.isAndroid) {
       return "http://10.0.2.2:8000";
     }
-    return "http://localhost:8000";
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
   
   @override
@@ -131,6 +131,20 @@ class _LoginPageState extends State<LoginPage> {
                         "$_baseUrl/auth/login/",
                         {'username': username, 'password': password},
                       );
+
+                      if (kDebugMode) {
+                              print(
+                                "=================== DEBUG COOKIES ===================",
+                              );
+                              print(
+                                "Status: ${request.loggedIn ? 'Logged In' : 'Logged Out'}",
+                              );
+                              print("Cookies: ${request.cookies}");
+                              print("Raw Response: $response");
+                              print(
+                                "=====================================================",
+                              );
+                            }
 
                       if (!context.mounted) return;
 

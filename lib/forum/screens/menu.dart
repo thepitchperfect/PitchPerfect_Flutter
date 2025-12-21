@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +38,16 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Club> _userFavoriteClubs = [];
   bool _isAdmin = false;
 
+    String get _baseUrl {
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+  }
+  
   @override
   void initState() {
     super.initState();
@@ -75,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // ==== ACTUAL CODE ====
-    final response = await request.get('http://localhost:8000/forum/json/');
+    final response = await request.get('$_baseUrl/forum/json/');
     final List<forum_model.ForumEntry> entries = [];
     final Set<Club> clubs = {};
     for (var item in response) {
@@ -90,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Club> favoriteClubs = [];
     if (request.loggedIn) {
       try {
-        final responseFavorites = await request.get('http://localhost:8000/forum/get-favorite-clubs/flutter/');
+        final responseFavorites = await request.get('$_baseUrl/forum/get-favorite-clubs/flutter/');
         if (responseFavorites['status'] == 'success') {
           favoriteClubs = (responseFavorites['clubs'] as List)
               .map((clubJson) => Club.fromJson(clubJson))

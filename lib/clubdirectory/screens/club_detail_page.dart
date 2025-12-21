@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +35,16 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
 
   late AnimationController _pulseController;
 
+  String get _baseUrl {
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+  }
+  
   @override
   void initState() {
     super.initState();
@@ -53,8 +66,8 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
   Future<void> fetchDetailedInfo() async {
     final request = context.read<CookieRequest>();
     // URL set to 127.0.0.1
-    final String url = 'http://127.0.0.1:8000/directory/club/${widget.club.id}/';
-    
+    final String url = '$_baseUrl/directory/club/${widget.club.id}/';
+
     try {
       final response = await request.get(url);
       setState(() {
@@ -75,7 +88,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
   Future<void> togglePick() async {
     final request = context.read<CookieRequest>();
     final String clubIdToSend = isPicked ? 'NONE' : widget.club.id;
-    const String url = 'http://127.0.0.1:8000/directory/set-league-pick/';
+    final String url = '$_baseUrl/directory/set-league-pick/';
 
     try {
       // NOTE: Passing Map directly to avoid double encoding
