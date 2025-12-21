@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -29,6 +30,16 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
   Timer? _autoScrollTimer;
   bool _scrollForward = true;
   bool _userInteracting = false;
+
+  String get _baseUrl {
+    if (kIsWeb) {
+      return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    }
+    if (Platform.isAndroid) {
+      return "http://10.0.2.2:8000";
+    }
+    return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+  }
 
   @override
   void initState() {
@@ -84,13 +95,9 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
   // 🔐 CHECK ADMIN STATUS
   Future<void> _checkAdmin(CookieRequest request) async {
-    final baseUrl = kIsWeb
-        ? "http://localhost:8000"
-        : "http://10.0.2.2:8000";
-
     try {
       final response =
-          await request.get("$baseUrl/predictions/auth/is-admin/");
+          await request.get("$_baseUrl/predictions/auth/is-admin/");
 
       if (!mounted) return;
 

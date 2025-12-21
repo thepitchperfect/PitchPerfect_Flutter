@@ -77,7 +77,7 @@ class ProfileHeader extends StatelessWidget {
               // LOGOUT BUTTON (Icon Only)
               IconButton(
                 icon: const Icon(Icons.logout),
-                color: Colors.red[400], // Red color for logout action
+                color: Color(0xFFFE8800), // Red color for logout action
                 tooltip: "Logout",
                 onPressed: () async {
                   // Use _baseUrl to ensure it works on Android Emulator too

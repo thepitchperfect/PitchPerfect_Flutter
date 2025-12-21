@@ -132,20 +132,6 @@ class _LoginPageState extends State<LoginPage> {
                         {'username': username, 'password': password},
                       );
 
-                      if (kDebugMode) {
-                              print(
-                                "=================== DEBUG COOKIES ===================",
-                              );
-                              print(
-                                "Status: ${request.loggedIn ? 'Logged In' : 'Logged Out'}",
-                              );
-                              print("Cookies: ${request.cookies}");
-                              print("Raw Response: $response");
-                              print(
-                                "=====================================================",
-                              );
-                            }
-
                       if (!context.mounted) return;
 
                       if (request.loggedIn) {

@@ -526,14 +526,10 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
   }
 
 Future<void> _deleteVote() async {
-  final baseUrl = kIsWeb
-        ? "http://localhost:8000"
-        : "http://10.0.2.2:8000";
-
   final request = context.read<CookieRequest>();
 
   final response = await request.post(
-    "$baseUrl/predictions/delete-vote/api/${widget.match.id}/",
+    "$_baseUrl/predictions/delete-vote/api/${widget.match.id}/",
     {},
   );
 

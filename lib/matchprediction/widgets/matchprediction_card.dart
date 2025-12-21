@@ -143,8 +143,11 @@ class MatchCard extends StatelessWidget {
                 width: 56,
                 height: 56,
                 fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.shield, size: 56, color: Colors.grey);
+                },
               )
-            : const Icon(Icons.shield, size: 56),
+            : const Icon(Icons.shield, size: 56, color: Colors.grey),
 
         const SizedBox(height: 6),
 
