@@ -56,13 +56,26 @@ class League {
     var list = json['clubs'] as List;
     List<Club> clubList = list.map((i) => Club.fromJson(i)).toList();
 
+    double lat = 48.8566;
+    double lng = 2.3522;
+
+    if (json['coords'] != null && json['coords'] is List && (json['coords'] as List).length >= 2) {
+      final coords = json['coords'] as List;
+      lat = (coords[0] as num).toDouble();
+      lng = (coords[1] as num).toDouble();
+    } 
+    else if (json['coordinate_lat'] != null) {
+       lat = (json['coordinate_lat'] as num).toDouble();
+       lng = (json['coordinate_lng'] as num).toDouble();
+    }
+
     return League(
       id: json['id'].toString(),
       name: json['name'],
-      region: json['region'],
+      region: json['region'] ?? 'Europe',
       logoPath: json['logo_path'],
-      latitude: (json['coordinate_lat'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['coordinate_lng'] as num?)?.toDouble() ?? 0.0,
+      latitude: lat,
+      longitude: lng,
       clubs: clubList,
     );
   }
