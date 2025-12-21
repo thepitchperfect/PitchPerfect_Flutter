@@ -24,33 +24,28 @@ class MyApp extends StatelessWidget {
         title: 'PitchPerfect',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          // 1. COLOR PALETTE (International White & Navy)
           colorScheme: const ColorScheme.light(
-            primary: Color(0xFF1E293B), // Navy (Slate 800)
-            secondary: Color(0xFFF97316), // Orange
-            surface: Color(0xFFF8FAFC), // Ultra Light Grey (Slate 50)
+            primary: Color(0xFF1E293B),
+            secondary: Color(0xFFF97316),
+            surface: Color(0xFFF8FAFC), 
             background: Color(0xFFF8FAFC),
             onSurface: Color(0xFF1E293B),
           ),
 
-          // 2. TYPOGRAPHY (The Secret Sauce)
           textTheme: TextTheme(
-            // Headers = Orbitron (Futuristic/Sports)
             displayLarge: GoogleFonts.orbitron(fontWeight: FontWeight.w900, letterSpacing: -1.0, color: const Color(0xFF1E293B)),
             displayMedium: GoogleFonts.orbitron(fontWeight: FontWeight.bold, letterSpacing: 0.5, color: const Color(0xFF1E293B)),
             displaySmall: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
             headlineMedium: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
 
-            // Body = Lato (Clean/Readable)
             bodyLarge: GoogleFonts.lato(fontSize: 16, color: const Color(0xFF334155)),
             bodyMedium: GoogleFonts.lato(fontSize: 14, color: const Color(0xFF475569)),
-            labelLarge: GoogleFonts.tektur(fontWeight: FontWeight.bold), // Buttons
+            labelLarge: GoogleFonts.tektur(fontWeight: FontWeight.bold),
           ),
 
           useMaterial3: true,
           scaffoldBackgroundColor: const Color(0xFFF8FAFC),
 
-          // 3. COMPONENT THEMES
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.white,
             foregroundColor: const Color(0xFF1E293B),
@@ -109,7 +104,6 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      // UNIVERSAL NAVBAR (Kept as requested)
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

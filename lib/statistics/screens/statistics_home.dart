@@ -30,18 +30,8 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
   }
 
   Future<void> _loadAllClubs(CookieRequest request) async {
-    // We can re-use fetchGeneralStats if it has all clubs,
-    // or create a new method to fetch just names/ids for search.
-    // For now, let's assume we can get a list of clubs from somewhere or
-    // maybe we just use the top lists as a starting point.
-    // To do it properly, we should add an endpoint or method to get all clubs.
-
-    // Assuming fetchAllClubs returns SimpleClub, we might need to map it to TeamStatistic
-    // or just change SearchDelegate to use SimpleClub.
-    // Let's use fetchAllClubs from StatisticsService which returns SimpleClub
     try {
       final simpleClubs = await StatisticsService.fetchAllClubs(request);
-      // Map SimpleClub to TeamStatistic (minimal fields needed for search)
       setState(() {
         _allClubsForSearch = simpleClubs
             .map(
@@ -49,7 +39,6 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
                 clubId: sc.id,
                 clubName: sc.name,
                 logoUrl: sc.logoUrl,
-                // Dummy values for required fields
                 season: '',
                 matchesPlayed: 0,
                 wins: 0,

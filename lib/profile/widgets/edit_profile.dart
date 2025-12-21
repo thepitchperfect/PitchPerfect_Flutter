@@ -40,7 +40,6 @@ class _EditProfileModalState extends State<EditProfileModal> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Profile Picture URL Input
               TextFormField(
                 initialValue: newPic,
                 decoration: const InputDecoration(
@@ -52,7 +51,6 @@ class _EditProfileModalState extends State<EditProfileModal> {
               ),
               const SizedBox(height: 16),
 
-              // Username (Read-Only)
               TextFormField(
                 initialValue: widget.user.username,
                 enabled: false,
@@ -65,7 +63,6 @@ class _EditProfileModalState extends State<EditProfileModal> {
               ),
               const SizedBox(height: 16),
 
-              // Full Name Input
               TextFormField(
                 initialValue: newName,
                 decoration: const InputDecoration(
@@ -78,7 +75,6 @@ class _EditProfileModalState extends State<EditProfileModal> {
               ),
               const SizedBox(height: 16),
 
-              // Email Input
               TextFormField(
                 initialValue: newEmail,
                 decoration: const InputDecoration(
@@ -94,13 +90,11 @@ class _EditProfileModalState extends State<EditProfileModal> {
         ),
       ),
       actions: [
-        // Cancel Button
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
         ),
 
-        // Save Button
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFFE8800),
@@ -109,9 +103,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-
-              // Trigger the save logic in the parent.
-              // Note: We do NOT pop here. The parent handles closing on success.
+              
               widget.onSave(newName, newEmail, newPic ?? "");
             }
           },

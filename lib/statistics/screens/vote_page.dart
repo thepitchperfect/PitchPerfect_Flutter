@@ -85,7 +85,6 @@ class _VotePageState extends State<VotePage> {
             ),
             const SizedBox(height: 20),
 
-            // Voting Form
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -143,7 +142,6 @@ class _VotePageState extends State<VotePage> {
             ),
             const SizedBox(height: 10),
 
-            // Results List
             FutureBuilder<Map<String, dynamic>>(
               future: _voteDataFuture,
               builder: (context, snapshot) {

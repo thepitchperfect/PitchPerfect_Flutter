@@ -22,7 +22,6 @@ class DiscussionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sort images by order and get the first one
     if (post.images.isNotEmpty) {
       post.images.sort((a, b) => a.order.compareTo(b.order));
     }
@@ -31,7 +30,6 @@ class DiscussionCard extends StatelessWidget {
         ? '$_baseUrl/forum/proxy-image/?url=${Uri.encodeComponent(post.images[0].url)}'
         : null;
 
-    // Consider a post edited only if the difference is more than a second.
     final bool isEdited = post.updatedAt.difference(post.createdAt).inSeconds > 1;
 
     return GestureDetector(

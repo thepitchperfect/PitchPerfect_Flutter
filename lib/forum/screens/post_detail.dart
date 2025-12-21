@@ -76,7 +76,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,14 +133,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
             ),
             const SizedBox(height: 16.0),
 
-            // Title
             Text(
               widget.post.title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
             ),
             const SizedBox(height: 16.0),
 
-            // Image Carousel
             if (widget.post.images.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,14 +184,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ],
               ),
 
-            // Content
             Text(
               widget.post.content,
               style: const TextStyle(fontSize: 16.0, height: 1.5),
             ),
             const Divider(height: 40, thickness: 1),
 
-            // Add Comment Form
             if (request.loggedIn)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,44 +216,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     onPressed: () async {
                       final content = _commentController.text;
                       if (content.isNotEmpty) {
-                        // ======== BYPASS TEST USER =========
-                        // try {
-                        //   final Map<String, dynamic> requestBody = {
-                        //     'content': content,
-                        //   };
-                        //
-                        //   final response = await http.post(
-                        //     Uri.parse('$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/'),
-                        //     headers: {"Content-Type": "application/json"},
-                        //     body: jsonEncode(requestBody),
-                        //   );
-                        //
-                        //   final responseData = jsonDecode(response.body);
-                        //
-                        //   if ((response.statusCode == 200 || response.statusCode == 201) && responseData['status'] == 'success') {
-                        //     setState(() {
-                        //       widget.post.comments.add(forum_model.Comment.fromJson(responseData['comment']));
-                        //       _commentController.clear();
-                        //     });
-                        //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        //       content: Text("Comment added successfully!"),
-                        //       backgroundColor: Colors.green,
-                        //     ));
-                        //   } else {
-                        //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        //       content: Text("Error: ${responseData['message'] ?? 'Failed to add comment'}"),
-                        //       backgroundColor: Colors.red,
-                        //     ));
-                        //   }
-                        // } catch (e) {
-                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        //     content: Text("An unexpected error occurred: $e"),
-                        //     backgroundColor: Colors.red,
-                        //   ));
-                        // }
-
-
-                        // print($user_id: request.jsonData['id'], $content: content);
                         final response = await request.postJson(
                           '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
                           jsonEncode({
@@ -292,7 +249,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
             const SizedBox(height: 24.0),
 
-            // Comments Section
             Text(
               'Comments (${widget.post.comments.length})',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),

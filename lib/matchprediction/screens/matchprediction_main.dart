@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-
 import '../screens/matchprediction_list.dart';
 import '../screens/matchprediction_forum.dart';
 
@@ -22,10 +21,8 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
   String filterType = 'all';
   String searchQuery = '';
 
-  // 🔐 ADMIN STATE
   bool _isAdmin = false;
 
-  // 🔥 AUTO SCROLL
   late final ScrollController _leagueScrollController;
   Timer? _autoScrollTimer;
   bool _scrollForward = true;
@@ -93,7 +90,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
     }
   }
 
-  // 🔐 CHECK ADMIN STATUS
   Future<void> _checkAdmin(CookieRequest request) async {
     try {
       final response =
@@ -128,7 +124,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
             children: [
               const SizedBox(height: 16),
 
-              // 🔵 SUBTITLE
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Center(
@@ -144,7 +139,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
               const SizedBox(height: 12),
 
-              // 🔵 LEAGUE FILTER
               NotificationListener<UserScrollNotification>(
                 onNotification: (notification) {
                   _userInteracting =
@@ -172,7 +166,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
               const SizedBox(height: 16),
 
-              // 🔵 SEARCH BAR
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TextField(
@@ -194,7 +187,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
               const SizedBox(height: 12),
 
-              // 🔵 ADD MATCH BUTTON
               if (_isAdmin)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -222,7 +214,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
               const SizedBox(height: 12),
 
-              // 🔵 FILTER BUTTONS
               Center(
                 child: Container(
                   padding: const EdgeInsets.all(4),
@@ -242,7 +233,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
               const SizedBox(height: 12),
 
-              // 🔵 MATCH LIST
               Expanded(
                 child: MatchListScreen(
                   key: ValueKey(
@@ -258,10 +248,6 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
       ),
     );
   }
-
-  // ==========================
-  // 🔹 UI HELPERS
-  // ==========================
 
   Widget _leagueButton(String text, String leagueName) {
     final isActive = selectedLeagueName == leagueName;

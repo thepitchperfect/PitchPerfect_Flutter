@@ -13,7 +13,7 @@ class ClubRef {
     return ClubRef(
       id: json['id'].toString(),
       name: json['name'],
-      logoUrl: json['logo_url'], // optional
+      logoUrl: json['logo_url'],
     );
   }
 }

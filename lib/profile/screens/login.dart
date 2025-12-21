@@ -1,13 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:pitch_perfect_flutter/main.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-// Import your target page (Profile or Main)
 import 'package:pitch_perfect_flutter/profile/screens/register.dart';
 
 class LoginPage extends StatefulWidget {
@@ -37,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
     final request = context.watch<CookieRequest>();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Light gray background
+      backgroundColor: Colors.grey[50],
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -47,13 +44,12 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(12.0),
             ),
             color: Colors.white,
-            surfaceTintColor: Colors.white, // Ensures card stays white
+            surfaceTintColor: Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(32.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // --- Title ---
                   Text(
                     'Log In',
                     style: GoogleFonts.orbitron(
@@ -64,7 +60,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 30.0),
 
-                  // --- Username Input ---
                   TextField(
                     controller: _usernameController,
                     decoration: InputDecoration(
@@ -90,7 +85,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // --- Password Input ---
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
@@ -117,7 +111,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 32.0),
 
-                  // --- Login Button ---
                   ElevatedButton(
                     onPressed: _isLoading
                         ? null
@@ -126,7 +119,6 @@ class _LoginPageState extends State<LoginPage> {
                       String username = _usernameController.text;
                       String password = _passwordController.text;
 
-                      // 1. URL Setup (Use 10.0.2.2 for Android Emulator)
                       final response = await request.login(
                         "$_baseUrl/auth/login/",
                         {'username': username, 'password': password},
@@ -138,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                         String message = response['message'];
                         String uname = response['username'];
 
-                        // 2. Success Logic
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -177,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: const Color(0xFFFE8800), // Theme Color
+                      backgroundColor: const Color(0xFFFE8800),
                       minimumSize: const Size(double.infinity, 50),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       shape: RoundedRectangleBorder(
@@ -194,7 +185,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24.0),
 
-                  // --- Register Link ---
                   GestureDetector(
                     onTap: () {
                       Navigator.push(

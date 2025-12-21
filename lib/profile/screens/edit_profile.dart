@@ -1,9 +1,9 @@
-import 'dart:io'; // Needed for File and Platform checks
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart'
-    as http; // Kept ONLY for MultipartRequest definitions
+    as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +34,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     newEmail = widget.user.email;
   }
 
-  // --- 1. Helper for Dynamic URL (Crucial for Emulator) ---
   String get _baseUrl {
     if (kIsWeb) {
       return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
@@ -59,10 +58,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Helper logic for image display
     String? currentPicUrl = widget.user.profpict;
     if (currentPicUrl != null && !currentPicUrl.startsWith('http')) {
-      currentPicUrl = "$_baseUrl$currentPicUrl"; // Use dynamic base URL
+      currentPicUrl = "$_baseUrl$currentPicUrl";
     }
 
     ImageProvider? imageProvider;
@@ -75,12 +73,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Edit Profile",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          'EDIT PROFILE',
+          style: TextStyle(
+            color: const Color(0xFF1E293B),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.0,
+          ),
         ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        surfaceTintColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -93,7 +95,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // === Profile Picture ===
               Center(
                 child: Stack(
                   children: [
@@ -152,7 +153,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               const SizedBox(height: 30),
 
-              // === Username ===
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -169,7 +169,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
 
-              // === Full Name ===
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -188,7 +187,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
 
-              // === Email ===
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -209,7 +207,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
               const SizedBox(height: 20),
 
-              // === Save Button ===
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -238,16 +235,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     "$_baseUrl/auth/profile/edit/",
                                   );
 
-                                  // 1. Create Request
                                   final multipartRequest =
                                       http.MultipartRequest('POST', url);
 
-                                  // 2. Add Fields
                                   multipartRequest.fields['full_name'] =
                                       newName;
                                   multipartRequest.fields['email'] = newEmail;
 
-                                  // 3. Add File
                                   if (_imageFile != null) {
                                     final Uint8List imageBytes =
                                         await _imageFile!.readAsBytes();
@@ -260,13 +254,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     multipartRequest.files.add(multipartFile);
                                   }
 
-                                  // 4. AUTHENTICATION (The Fix)
-                                  // We prefer the headers from the provider as they are pre-formatted
                                   Map<String, String> headers = Map.from(
                                     request.headers,
                                   );
 
-                                  // If 'Cookie' header is missing but we have cookies in the map, construct it manually
                                   if (headers['cookie'] == null &&
                                       request.cookies.isNotEmpty) {
                                     String cookieHeader = request
@@ -276,8 +267,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         .join("; ");
                                     headers['cookie'] = cookieHeader;
                                   }
-
-                                  // Remove content-type so MultipartRequest can set its own boundary
+                  
                                   headers.removeWhere(
                                     (key, value) =>
                                         key.toLowerCase() == "content-type",
@@ -285,12 +275,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                                   multipartRequest.headers.addAll(headers);
 
-                                  // DEBUG: Print headers to ensure 'cookie' (with sessionid) is present
                                   print(
                                     "Sending Headers: ${multipartRequest.headers}",
                                   );
 
-                                  // 5. Send
                                   final streamedResponse =
                                       await multipartRequest.send();
                                   final response = await http
@@ -300,10 +288,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     setState(() => _isLoading = false);
 
                                     if (response.statusCode == 200) {
-                                      // Success!
                                       Navigator.pop(context, true);
                                     } else if (response.statusCode == 302) {
-                                      // HANDLE 302: This specifically catches the Login Redirect
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
@@ -314,7 +300,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                           backgroundColor: Colors.red,
                                         ),
                                       );
-                                      // Optional: Navigate user back to login page here
                                     } else {
                                       print("Server Error: ${response.body}");
                                       ScaffoldMessenger.of(

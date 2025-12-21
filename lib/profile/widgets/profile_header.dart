@@ -1,11 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 import 'package:pitch_perfect_flutter/profile/models/profile_models.dart';
-import 'package:provider/provider.dart'; // 1. Import Provider
-import 'package:pbp_django_auth/pbp_django_auth.dart'; // 2. Import PBP Django Auth
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart'; 
 
 class ProfileHeader extends StatelessWidget {
   final Profile user;
@@ -29,7 +28,6 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 4. Get the request object from Provider
     final request = context.watch<CookieRequest>();
 
     ImageProvider? imageProvider;
@@ -50,11 +48,9 @@ class ProfileHeader extends StatelessWidget {
       color: Colors.white,
       child: Column(
         children: [
-          // BUTTONS ROW (Edit Left, Logout Right)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // EDIT BUTTON
               ElevatedButton(
                 onPressed: onEditPressed,
                 style: ElevatedButton.styleFrom(
@@ -74,13 +70,11 @@ class ProfileHeader extends StatelessWidget {
                 ),
               ),
 
-              // LOGOUT BUTTON (Icon Only)
               IconButton(
                 icon: const Icon(Icons.logout),
-                color: Color(0xFFFE8800), // Red color for logout action
+                color: Color(0xFFFE8800),
                 tooltip: "Logout",
                 onPressed: () async {
-                  // Use _baseUrl to ensure it works on Android Emulator too
                   final response = await request.logout(
                     "$_baseUrl/auth/logout/",
                   );
@@ -96,7 +90,6 @@ class ProfileHeader extends StatelessWidget {
                         ),
                       );
 
-                      // Navigate back to Login
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -116,7 +109,6 @@ class ProfileHeader extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // PROFILE PICTURE
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -129,17 +121,14 @@ class ProfileHeader extends StatelessWidget {
               radius: 60,
               backgroundColor: Colors.grey.shade200,
 
-              // 1. Pass the provider (can be null)
               backgroundImage: imageProvider,
 
-              // 2. THE FIX: Only provide the error listener if the provider is NOT null
               onBackgroundImageError: imageProvider != null
                   ? (exception, stackTrace) {
                       debugPrint("Image Load Error: $exception");
                     }
                   : null,
 
-              // 3. Fallback child
               child: imageProvider == null
                   ? const Icon(Icons.person, size: 60, color: Colors.grey)
                   : null,
@@ -147,7 +136,6 @@ class ProfileHeader extends StatelessWidget {
           ),
           const SizedBox(height: 15),
 
-          // USER INFO
           Text(
             user.fullName,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),

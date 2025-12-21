@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -67,7 +66,6 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
 
   Future<void> fetchDetailedInfo() async {
     final request = context.read<CookieRequest>();
-    // URL set to 127.0.0.1
     final String url = '$_baseUrl/directory/club/${widget.club.id}/';
 
     try {
@@ -178,7 +176,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
             backgroundColor: Colors.white,
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B), size: 20),
-              onPressed: () => Navigator.pop(context, true), // Return true to signal refresh
+              onPressed: () => Navigator.pop(context, true),
             ),
           ),
         ),
@@ -187,7 +185,6 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // 1. HERO SECTION
             SizedBox(
               height: 360,
               child: Stack(
@@ -262,14 +259,12 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
               ),
             ),
 
-            // 2. BENTO GRID
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: isLoading
                   ? _buildShimmerLoading()
                   : Column(
                       children: [
-                        // --- LINKED TO STATISTICS PAGE ---
                         Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           width: double.infinity,

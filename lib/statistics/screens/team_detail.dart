@@ -170,7 +170,7 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
           colors: [
             Color(0xFFfdba74),
             Color(0xFFfb923c),
-          ], // Orange 300-400 equivalent
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -254,7 +254,7 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
             "Delete Your Vote",
             Icons.delete_outline,
             Colors.redAccent,
-            () {}, // TODO: Implement delete vote
+            () {}, 
           )
         else if (hasVoted)
           Container(

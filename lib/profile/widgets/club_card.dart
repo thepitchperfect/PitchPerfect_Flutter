@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pitch_perfect_flutter/profile/models/activity_models.dart';
 
 class ClubGridItem extends StatelessWidget {
-  final LeaguePick club; // Changed from Club to LeaguePick
+  final LeaguePick club;
 
   const ClubGridItem({super.key, required this.club});
 
@@ -16,7 +16,6 @@ class ClubGridItem extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          // Navigation logic
         },
         borderRadius: BorderRadius.circular(12),
         child: Column(
@@ -28,7 +27,7 @@ class ClubGridItem extends StatelessWidget {
                 child:
                     (club
                         .logoUrl
-                        .isNotEmpty) // LeaguePick logoUrl is String (not nullable in your model)
+                        .isNotEmpty)
                     ? Image.network(
                         club.logoUrl,
                         errorBuilder: (context, error, stackTrace) =>

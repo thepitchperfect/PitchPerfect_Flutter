@@ -43,7 +43,6 @@ class _ClubCardState extends State<ClubCard> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    // NEW VERTICAL LAYOUT (Fixes the overflow)
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) => Transform.scale(
@@ -88,7 +87,6 @@ class _ClubCardState extends State<ClubCard> with SingleTickerProviderStateMixin
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 1. LOGO (Big & Centered)
                   Expanded(
                     child: Hero(
                       tag: 'club_logo_${widget.club.id}',
@@ -112,7 +110,6 @@ class _ClubCardState extends State<ClubCard> with SingleTickerProviderStateMixin
                   
                   const SizedBox(height: 12),
 
-                  // 2. INFO (Centered)
                   Text(
                     widget.club.name,
                     textAlign: TextAlign.center,
@@ -127,7 +124,6 @@ class _ClubCardState extends State<ClubCard> with SingleTickerProviderStateMixin
                   ),
                   const SizedBox(height: 6),
                   
-                  // 3. YEAR BADGE
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(

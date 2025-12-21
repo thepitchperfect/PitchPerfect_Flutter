@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-
 import '../../clubdirectory/models/club_model.dart';
 
 class MatchPredictionForm extends StatefulWidget {
@@ -16,7 +15,6 @@ class MatchPredictionForm extends StatefulWidget {
 
 class _MatchPredictionFormState
     extends State<MatchPredictionForm> {
-  // FORM STATE
   String? selectedLeagueId;
   String? selectedHomeTeamId;
   String? selectedAwayTeamId;
@@ -40,7 +38,6 @@ class _MatchPredictionFormState
     _futureLeagues = fetchLeagues();
   }
 
-  // FETCH THE LEAGUES
   Future<List<League>> fetchLeagues() async {
     final request = context.read<CookieRequest>();
 
@@ -55,7 +52,6 @@ class _MatchPredictionFormState
         .toList();
   }
 
-  // SUBMIT ADD MATCH FORM 
   Future<void> submitForm() async {
     if (selectedLeagueId == null ||
         selectedHomeTeamId == null ||
@@ -81,21 +77,19 @@ class _MatchPredictionFormState
       },
     );
 
-    //  SUCCESS 
     if (response["status"] == "success") {
       Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            "❌ ${response["message"] ?? "Failed to save match"}",
+            "${response["message"] ?? "Failed to save match"}",
           ),
         ),
       );
     }
   }
 
-  // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,8 +236,7 @@ class _MatchPredictionFormState
       ),
     );
   }
-
-  // ---------------- HELPER ----------------
+  
   Widget _dropdown({
     required String label,
     required String? value,

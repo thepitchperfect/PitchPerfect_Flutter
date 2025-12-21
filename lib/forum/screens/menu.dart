@@ -76,17 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (mounted) {
       setState(() {
         _isAdmin = userData['is_staff'] ?? false;
-
-        // --- START OF FLUTTER BYPASS ---
-        // For testing purposes, temporarily set _isAdmin to true.
-        // This will make the "News" option appear in the CreatePostForm dropdown.
-        // REMEMBER to undo this when authentication is implemented!
-        // _isAdmin = true;
-        // --- END OF FLUTTER BYPASS ---
       });
     }
 
-    // ==== ACTUAL CODE ====
     final response = await request.get('$_baseUrl/forum/json/');
     final List<forum_model.ForumEntry> entries = [];
     final Set<Club> clubs = {};
@@ -98,7 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    // Get User favourite clubs
     List<Club> favoriteClubs = [];
     if (request.loggedIn) {
       try {
@@ -109,24 +100,10 @@ class _MyHomePageState extends State<MyHomePage> {
               .toList();
         }
       } catch (e) {
-        // Handle potential errors if the API call fails
         print("Could not fetch favorite clubs: $e");
       }
     }
 
-    // DELETE THIS LATER === BYPASS USER
-    // final response = await http.get(Uri.parse('http://localhost:8000/forum/json/'));
-    // final List<dynamic> responseData = json.decode(response.body); // Assuming the response is a direct list
-    // final List<forum_model.ForumEntry> entries = [];
-    // final Set<Club> clubs = {};
-    // for (var item in responseData) {
-    //   final entry = forum_model.ForumEntry.fromJson(item);
-    //   entries.add(entry);
-    //   if (entry.clubs.isNotEmpty) {
-    //     clubs.addAll(entry.clubs);
-    //   }
-    // }
-    // === END BYPASS USER ===
 
     if (mounted) {
       setState(() {

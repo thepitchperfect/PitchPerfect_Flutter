@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../models/matchpredictionmodel.dart';
 import '../screens/matchprediction_detail.dart';
 import '../../clubdirectory/models/club_model.dart';
@@ -38,7 +37,6 @@ class MatchCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // 🔵 LEAGUE + DATE
           Row(
             children: [
               const Icon(Icons.emoji_events, size: 28),
@@ -63,7 +61,6 @@ class MatchCard extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // 🔵 TEAMS
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -75,7 +72,6 @@ class MatchCard extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // 🔵 WIN PROBABILITY
           Column(
             children: [
               const Text(
@@ -106,7 +102,6 @@ class MatchCard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // 🔵 VOTE BUTTON
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -133,7 +128,6 @@ class MatchCard extends StatelessWidget {
     );
   }
 
-  // 🔹 TEAM COLUMN (CLUB LOGO)
   Widget _teamColumn(String name, Club? club) {
     return Column(
       children: [
@@ -164,12 +158,11 @@ class MatchCard extends StatelessWidget {
     );
   }
 
-  // ✅ FIXED URL HANDLER (THIS WAS THE BUG)
   String _fullUrl(String path) {
     if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path; // already absolute (e.g. Wikimedia)
+      return path;
     }
-    return "http://10.0.2.2:8000$path"; // Django media path
+    return "http://10.0.2.2:8000$path";
   }
 
   String _formatDate(DateTime dt) {

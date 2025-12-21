@@ -19,20 +19,17 @@ class UserActivity {
   });
 
   factory UserActivity.fromJson(Map<String, dynamic> json) => UserActivity(
-    username: json["username"] ?? "Unknown", // specific safety for string
-    // KEY FIX: Check if "league_picks" is null before mapping
+    username: json["username"] ?? "Unknown",
     leaguePicks: json["league_picks"] == null
         ? []
         : List<LeaguePick>.from(
             json["league_picks"].map((x) => LeaguePick.fromJson(x)),
           ),
-    // KEY FIX: Check if "user_posts" is null
     userPosts: json["user_posts"] == null
         ? []
         : List<UserPost>.from(
             json["user_posts"].map((x) => UserPost.fromJson(x)),
           ),
-    // KEY FIX: Check if "user_predictions" is null
     userPredictions: json["user_predictions"] == null
         ? []
         : List<UserPrediction>.from(
@@ -68,9 +65,9 @@ class LeaguePick {
   });
 
   factory LeaguePick.fromJson(Map<String, dynamic> json) => LeaguePick(
-    id: json["id"]?.toString() ?? "", // Convert to string safely
+    id: json["id"]?.toString() ?? "", 
     name: json["name"] ?? "Unknown Club",
-    logoUrl: json["logo_url"] ?? "", // Handle null logo
+    logoUrl: json["logo_url"] ?? "", 
     foundedYear: json["founded_year"] ?? 0,
     desc: json["desc"] ?? "",
     isLeaguePick: json["is_league_pick"] ?? false,
@@ -119,7 +116,6 @@ class UserPost {
     author: json["author"] ?? "Anonymous",
     createdAt: DateTime.tryParse(json["created_at"] ?? "") ?? DateTime.now(),
     updatedAt: DateTime.tryParse(json["updated_at"] ?? "") ?? DateTime.now(),
-    // Check for nulls in list fields
     clubs: json["clubs"] == null
         ? []
         : List<dynamic>.from(json["clubs"].map((x) => x)),

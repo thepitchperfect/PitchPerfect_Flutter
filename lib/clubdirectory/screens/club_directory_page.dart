@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -64,7 +63,6 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
   }
 
   Future<void> fetchData(CookieRequest request) async {
-    // NOTE: Use 10.0.2.2 for Android Emulator, 127.0.0.1 for Web/iOS
     final response = await request.get('$_baseUrl/directory/json/');
     
     if (response != null) {
@@ -111,7 +109,6 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
         ),
       ),
     ).then((shouldRefresh) {
-      // If we return true from Detail Page (or just always refresh to be safe)
       _refreshData();
     });
   }
@@ -215,13 +212,10 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
                                 ),
                                 delegate: SliverChildBuilderDelegate(
                                   (context, index) {
-                                    // Use GestureDetector to wrap the card properly
                                     return GestureDetector(
                                         onTap: () => _navigateToDetail(context, clubs[index], league.id, league.name),
-                                        // Pass the club data, but disable internal navigation in ClubCard if needed
-                                        // For now, assuming ClubCard handles display
                                         child: AbsorbPointer(
-                                          absorbing: true, // We handle tap here in the Grid
+                                          absorbing: true,
                                           child: ClubCard(
                                             club: clubs[index],
                                             leagueId: league.id,
@@ -321,7 +315,7 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
                             Navigator.push(
                               context, 
                               MaterialPageRoute(builder: (_) => const LoginPage())
-                            ).then((_) => _refreshData()); // Refresh on return
+                            ).then((_) => _refreshData());
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFF97316),
@@ -344,11 +338,9 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
   Widget _buildChampionSlot(League league, Map<String, dynamic>? pickData) {
     bool hasPick = pickData != null;
 
-    // FIX: Tapping this filters the view to that league so user can pick
     return GestureDetector(
       onTap: () {
-        _onLeagueSelected(league); // Filter the list
-        // Optionally scroll down if you want, but filtering is clearer
+        _onLeagueSelected(league);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Showing clubs for ${league.name}"))
         );
@@ -419,7 +411,6 @@ class _ClubDirectoryPageState extends State<ClubDirectoryPage> with TickerProvid
     );
   }
 
-  // --- Helper Methods ---
 
   List<MapEntry<League, List<Club>>> _getFilteredData() {
     final filteredDisplayData = <MapEntry<League, List<Club>>>[];

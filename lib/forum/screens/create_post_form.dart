@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -93,17 +92,11 @@ class _CreatePostFormState extends State<CreatePostForm> {
           ElevatedButton(
             child: const Text('Add'),
             onPressed: () {
-              //if (urlController.text.isNotEmpty && Uri.tryParse(urlController.text)?.hasAbsolutePath == true) {
                 setState(() {
                   _imageUrls.add(urlController.text);
                   _captionControllers.add(TextEditingController());
                 });
                 Navigator.pop(context);
-              //} else {
-                //ScaffoldMessenger.of(context).showSnackBar(
-                  //const SnackBar(content: Text('Please enter a valid URL.')),
-                //);
-              //}
             },
           ),
         ],
@@ -123,7 +116,6 @@ class _CreatePostFormState extends State<CreatePostForm> {
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
     final bool isAdmin = request.loggedIn ? request.jsonData['is_staff'] ?? false : false;
-    // const bool isAdmin = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -138,7 +130,6 @@ class _CreatePostFormState extends State<CreatePostForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Post Type
               DropdownButtonFormField<String>(
                 value: _postType,
                 decoration: const InputDecoration(labelText: 'Post Type', border: OutlineInputBorder()),
@@ -256,26 +247,6 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       final List<String> imageUrls = _imageUrls;
                       final List<String> imageCaptions = _captionControllers.map((controller) => controller.text).toList();
 
-                      // TEST USER
-                      // final Map<String, dynamic> requestBody = {
-                      //   'title': _title,
-                      //   'content': _content,
-                      //   'post_type': _postType,
-                      //   'clubs': _selectedClubs.map((c) => c.id).toList(),
-                      //   'image_urls': imageUrls,
-                      //   'image_captions': imageCaptions,
-                      // };
-                      //
-                      // // 2. Use a standard http.post request instead of request.postJson
-                      // final response = await http.post(
-                      //   Uri.parse("$_baseUrl/forum/api/post/create/flutter/"),
-                      //   headers: {"Content-Type": "application/json"},
-                      //   body: jsonEncode(requestBody),
-                      // );
-                      //
-                      // // 3. Decode the response from the server.
-                      // final responseData = jsonDecode(response.body);
-
 
                       final response = await request.postJson(
                           "$_baseUrl/forum/api/post/create/flutter/",
@@ -305,23 +276,6 @@ class _CreatePostFormState extends State<CreatePostForm> {
                         );
                       }
 
-                      // if ((response.statusCode == 200 || response.statusCode == 201) && responseData['success'] == true) {
-                      //   Navigator.pop(context);
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     const SnackBar(
-                      //       content: Text("Post created successfully!"),
-                      //       backgroundColor: Colors.green,
-                      //     ),
-                      //   );
-                      // } else {
-                      //   // Display the actual error message from the backend.
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     SnackBar(
-                      //       content: Text("Error: ${responseData['error'] ?? 'An unknown error occurred'}"),
-                      //       backgroundColor: Colors.red,
-                      //     ),
-                      //   );
-                      // }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("An unexpected error occurred: $e")));
                     }

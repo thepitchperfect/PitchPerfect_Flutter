@@ -3,10 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-
 import '../models/matchpredictionmodel.dart';
 import '../widgets/matchprediction_card.dart';
 import '../../clubdirectory/models/club_model.dart';
@@ -61,9 +59,6 @@ class _MatchListScreenState extends State<MatchListScreen> {
     }
   }
 
-  // ==============================
-  // 🔵 FETCH MATCHES (AUTH-AWARE)
-  // ==============================
   Future<List<Matchprediction>> fetchMatches() async {
     final uri = Uri.parse("$_baseUrl/predictions/json/").replace(
       queryParameters: {
@@ -78,7 +73,6 @@ class _MatchListScreenState extends State<MatchListScreen> {
     List<Matchprediction> matches =
         matchpredictionFromJson(jsonEncode(response));
 
-    // 🔥 Stable league filter
     if (widget.leagueName.isNotEmpty) {
       matches = matches.where((m) {
         return m.league.name == widget.leagueName;
@@ -88,9 +82,6 @@ class _MatchListScreenState extends State<MatchListScreen> {
     return matches;
   }
 
-  // ==============================
-  // 🔵 FETCH CLUB DIRECTORY
-  // ==============================
   Future<Map<String, Club>> fetchClubMap() async {
     final response =
         await http.get(Uri.parse("$_baseUrl/directory/json/"));
@@ -123,9 +114,6 @@ class _MatchListScreenState extends State<MatchListScreen> {
     return clubMap;
   }
 
-  // ==============================
-  // 🔵 UI
-  // ==============================
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, Club>>(

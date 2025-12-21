@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pitch_perfect_flutter/profile/models/activity_models.dart';
 
 class PostCard extends StatelessWidget {
-  final UserPost post; // Changed to UserPost
+  final UserPost post;
 
   const PostCard({super.key, required this.post});
 
@@ -20,12 +20,9 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Image Handling
     String? imageUrl;
     if (post.images.isNotEmpty) {
-      // Because images is List<dynamic>, we treat it as a Map
       final firstImage = post.images.first;
-      // Check if 'url' exists in the map, otherwise handle gracefully
       String rawUrl = (firstImage is Map && firstImage.containsKey('url'))
           ? firstImage['url']
           : '';
@@ -50,19 +47,16 @@ class PostCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          // Navigate to Post Detail
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- Badges / Clubs ---
               if (post.clubs.isNotEmpty) ...[
                 Wrap(
                   spacing: 8,
                   children: post.clubs.map((club) {
-                    // Because clubs is List<dynamic>, we treat it as a Map
                     String clubName = (club is Map && club.containsKey('name'))
                         ? club['name']
                         : 'Unknown Club';
@@ -91,7 +85,6 @@ class PostCard extends StatelessWidget {
                 const SizedBox(height: 8),
               ],
 
-              // --- Title ---
               Text(
                 post.title,
                 style: const TextStyle(
@@ -101,14 +94,12 @@ class PostCard extends StatelessWidget {
                 ),
               ),
 
-              // --- Date ---
               Text(
                 "${post.createdAt.day}-${post.createdAt.month}-${post.createdAt.year}",
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const SizedBox(height: 8),
 
-              // --- Image ---
               if (imageUrl != null) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
@@ -131,7 +122,6 @@ class PostCard extends StatelessWidget {
                 const SizedBox(height: 8),
               ],
 
-              // --- Content ---
               Text(
                 post.content,
                 maxLines: 3,
@@ -139,7 +129,6 @@ class PostCard extends StatelessWidget {
                 style: const TextStyle(fontSize: 14, color: Colors.black87),
               ),
 
-              // --- Footer ---
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

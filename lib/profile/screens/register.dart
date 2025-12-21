@@ -1,12 +1,11 @@
-import 'dart:convert'; // [FIX 1] Required for jsonEncode
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pitch_perfect_flutter/profile/screens/login.dart'; // Adjust import path
+import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -104,7 +103,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 32.0),
 
-                  // --- Register Button ---
                   ElevatedButton(
                     onPressed: _isLoading
                         ? null
@@ -116,7 +114,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             String confirmPassword =
                                 _confirmPasswordController.text;
 
-                            // 1. Validation
                             if (username.isEmpty ||
                                 password.isEmpty ||
                                 fullName.isEmpty ||
@@ -139,7 +136,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             setState(() => _isLoading = true);
 
                             try {
-                              // [FIX 2] Use jsonEncode to convert the Map to a JSON String
                               final response = await request.postJson(
                                 "$_baseUrl/auth/register/",
                                 jsonEncode({
@@ -176,7 +172,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               }
                             } catch (e) {
                               if (context.mounted) {
-                                // This catches the HTML error if it still happens
                                 _showDialog(
                                   'Connection Error',
                                   "Could not connect to server.\nError: $e",

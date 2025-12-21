@@ -4,7 +4,6 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import '../models/vote_models.dart';
 
 class StatisticsService {
-  // Use 127.0.0.1 for Web/iOS, 10.0.2.2 for Android Emulator
   static String get baseUrl {
     if (kIsWeb) return 'https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id';
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -17,10 +16,6 @@ class StatisticsService {
     CookieRequest request,
   ) async {
     final response = await request.get('$baseUrl/statistics/json/general/');
-    // pbp_django_auth automatically decodes JSON if response is JSON
-    // But we need to be sure. It returns dynamic.
-
-    // If it's already a Map, good.
     return response;
   }
 

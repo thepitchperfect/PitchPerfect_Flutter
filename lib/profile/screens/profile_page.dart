@@ -5,16 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pitch_perfect_flutter/profile/widgets/club_card.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-
-// --- YOUR IMPORTS ---
-// Update these paths to match where you saved the files
 import 'package:pitch_perfect_flutter/profile/models/profile_models.dart';
-import 'package:pitch_perfect_flutter/profile/models/activity_models.dart'; // Renamed from activity_models.dart
+import 'package:pitch_perfect_flutter/profile/models/activity_models.dart';
 import 'package:pitch_perfect_flutter/profile/widgets/profile_header.dart';
 import 'package:pitch_perfect_flutter/profile/screens/edit_profile.dart';
-
-// --- WIDGET IMPORTS ---
-// Update these paths to match where you saved the fixed widgets
 import 'package:pitch_perfect_flutter/profile/widgets/post_card.dart';
 import 'package:pitch_perfect_flutter/profile/widgets/prediction_card.dart';
 
@@ -39,7 +33,6 @@ class _ProfilePageState extends State<ProfilePage>
     return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
 
-  // Changed ProfileActivity to UserActivity
   Future<Profile>? _futureProfile;
   Future<UserActivity>? _futureActivity;
 
@@ -69,7 +62,6 @@ class _ProfilePageState extends State<ProfilePage>
 
   Future<Profile> fetchProfile(CookieRequest request) async {
     final response = await request.get('$_baseUrl/auth/profile/');
-    // Handle both List and Map responses safely
     if (response is List) {
       return Profile.fromJson(response[0]);
     } else {
@@ -77,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
-  // Updated to return UserActivity
   Future<UserActivity> fetchUserActivity(CookieRequest request) async {
     final response = await request.get('$_baseUrl/api/user-activity/');
     return UserActivity.fromJson(response);
@@ -108,37 +99,44 @@ class _ProfilePageState extends State<ProfilePage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: const Text(
+          'USER PROFILE',
+          style: TextStyle(
+            color: const Color(0xFF1E293B),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.0,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+      ),
       body: _futureProfile == null
           ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<Profile>(
               future: _futureProfile,
               builder: (context, snapshot) {
-                // 1. Loading
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                // 2. Error
                 else if (snapshot.hasError) {
                   return Center(child: Text("Error: ${snapshot.error}"));
                 }
-                // 3. No Data
                 else if (!snapshot.hasData) {
                   return const Center(child: Text("No profile data found"));
                 }
 
-                // 4. Data Ready
                 final user = snapshot.data!;
 
                 return SafeArea(
                   child: Column(
                     children: [
-                      // Header
                       ProfileHeader(
                         user: user,
                         onEditPressed: () => _handleEditProfile(user),
                       ),
 
-                      // Tabs
                       Container(
                         color: Colors.white,
                         width: double.infinity,
@@ -163,7 +161,6 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                       ),
 
-                      // Tab Content
                       Expanded(
                         child: _futureActivity == null
                             ? const Center(child: CircularProgressIndicator())
@@ -192,7 +189,6 @@ class _ProfilePageState extends State<ProfilePage>
                                   return TabBarView(
                                     controller: _tabController,
                                     children: [
-                                      // --- Tab 1: League Picks (GRID VIEW) ---
                                       activity.leaguePicks.isEmpty
                                           ? const Center(
                                               child: Text(
@@ -204,16 +200,15 @@ class _ProfilePageState extends State<ProfilePage>
                                               gridDelegate:
                                                   const SliverGridDelegateWithFixedCrossAxisCount(
                                                     crossAxisCount:
-                                                        2, // 2 items per row
+                                                        2,
                                                     childAspectRatio:
-                                                        1.0, // Square items
+                                                        1.0,
                                                     crossAxisSpacing: 16,
                                                     mainAxisSpacing: 16,
                                                   ),
                                               itemCount:
                                                   activity.leaguePicks.length,
                                               itemBuilder: (context, index) {
-                                                // Use the ClubGridItem we fixed previously
                                                 return ClubGridItem(
                                                   club: activity
                                                       .leaguePicks[index],
@@ -221,7 +216,6 @@ class _ProfilePageState extends State<ProfilePage>
                                               },
                                             ),
 
-                                      // --- Tab 2: Posts (LIST VIEW) ---
                                       activity.userPosts.isEmpty
                                           ? const Center(
                                               child: Text("No posts yet."),
@@ -238,7 +232,6 @@ class _ProfilePageState extends State<ProfilePage>
                                               },
                                             ),
 
-                                      // --- Tab 3: Predictions (LIST VIEW) ---
                                       activity.userPredictions.isEmpty
                                           ? const Center(
                                               child: Text(

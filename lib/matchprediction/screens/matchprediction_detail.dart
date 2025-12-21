@@ -24,15 +24,12 @@ class MatchPredictionDetail extends StatefulWidget {
 class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
   late Future<Map<String, Club>> _futureClubMap;
 
-  /// 🔒 BACKEND-AUTHORITATIVE VOTE STATE
   String? _userPrediction;
 
   @override
   void initState() {
     super.initState();
     _futureClubMap = fetchClubMap();
-
-    // 🔥 LOCK BASED ON BACKEND VALUE (SURVIVES HOT RESTART)
     _userPrediction = widget.match.userVote;
   }
 
@@ -45,9 +42,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     return "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
   }
 
-  // ==============================
-  // 🔵 FETCH CLUB DIRECTORY
-  // ==============================
   Future<Map<String, Club>> fetchClubMap() async {
     final response =
         await http.get(Uri.parse("$_baseUrl/directory/json/"));
@@ -131,7 +125,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
               ),
               child: Column(
                 children: [
-                  // ================= HEADER =================
                   Row(
                     children: [
                       Expanded(child: _teamHeader(homeClub)),
@@ -163,7 +156,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
 
                   const Divider(height: 40),
 
-                  // ================= VOTING =================
                   const Text(
                     "Cast Your Prediction",
                     style: TextStyle(
@@ -204,7 +196,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
                     ],
                   ),
 
-                  // ================= ALREADY VOTED UI =================
                   if (_userPrediction != null) ...[
                     const SizedBox(height: 20),
                     Container(
@@ -274,7 +265,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
 
                   const Divider(height: 40),
 
-                  // ================= RESULTS =================
                   _resultBar(
                     label: "${homeClub?.name ?? 'Home'} Win",
                     percent: votes.homeWin,
@@ -336,8 +326,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
       },
     );
   }
-
-  // ================= HELPERS =================
 
   Widget _teamHeader(Club? club) {
     return Column(
@@ -426,8 +414,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     return "${dt.day}/${dt.month}/${dt.year} "
         "${dt.hour}:${dt.minute.toString().padLeft(2, '0')}";
   }
-
-  // ================= VOTE =================
 
   Widget _voteButton(
     BuildContext context, {
