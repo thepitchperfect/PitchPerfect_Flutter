@@ -31,9 +31,9 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
   }
 
   Future<void> _loadAllClubs(CookieRequest request) async {
-    // We can re-use fetchGeneralStats if it has all clubs, 
+    // We can re-use fetchGeneralStats if it has all clubs,
     // or create a new method to fetch just names/ids for search.
-    // For now, let's assume we can get a list of clubs from somewhere or 
+    // For now, let's assume we can get a list of clubs from somewhere or
     // maybe we just use the top lists as a starting point.
     // To do it properly, we should add an endpoint or method to get all clubs.
 
@@ -44,33 +44,37 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
       final simpleClubs = await StatisticsService.fetchAllClubs(request);
       // Map SimpleClub to TeamStatistic (minimal fields needed for search)
       setState(() {
-        _allClubsForSearch = simpleClubs.map((sc) => TeamStatistic(
-          clubId: sc.id,
-          clubName: sc.name,
-          logoUrl: sc.logoUrl,
-          // Dummy values for required fields
-          season: '',
-          matchesPlayed: 0,
-          wins: 0,
-          draws: 0,
-          losses: 0,
-          winPercentage: 0,
-          scoredPerMatch: 0,
-          concededPerMatch: 0,
-          avgMatchGoals: 0,
-          cleanSheetsPercentage: 0,
-          failedToScorePercentage: 0,
-          possessionAvg: 0,
-          shotsTakenPerMatch: 0,
-          shotsConversionRate: 0,
-          foulsCommittedPerMatch: 0,
-          fouledAgainstPerMatch: 0,
-          penaltiesWon: '',
-          penaltiesConceded: '',
-          goalKicksPerMatch: 0,
-          throwInsPerMatch: 0,
-          freeKicksPerMatch: 0,
-        )).toList();
+        _allClubsForSearch = simpleClubs
+            .map(
+              (sc) => TeamStatistic(
+                clubId: sc.id,
+                clubName: sc.name,
+                logoUrl: sc.logoUrl,
+                // Dummy values for required fields
+                season: '',
+                matchesPlayed: 0,
+                wins: 0,
+                draws: 0,
+                losses: 0,
+                winPercentage: 0,
+                scoredPerMatch: 0,
+                concededPerMatch: 0,
+                avgMatchGoals: 0,
+                cleanSheetsPercentage: 0,
+                failedToScorePercentage: 0,
+                possessionAvg: 0,
+                shotsTakenPerMatch: 0,
+                shotsConversionRate: 0,
+                foulsCommittedPerMatch: 0,
+                fouledAgainstPerMatch: 0,
+                penaltiesWon: '',
+                penaltiesConceded: '',
+                goalKicksPerMatch: 0,
+                throwInsPerMatch: 0,
+                freeKicksPerMatch: 0,
+              ),
+            )
+            .toList();
       });
     } catch (e) {
       print("Error loading clubs for search: $e");
@@ -83,8 +87,11 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         title: Text(
-          'Football Statistics Hub',
-          style: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
+          'STATISTICS HUB',
+          style: GoogleFonts.orbitron(
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1E293B),
+          ),
         ),
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF1E293B),
