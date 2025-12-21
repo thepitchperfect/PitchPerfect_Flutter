@@ -9,6 +9,7 @@ import 'package:pitch_perfect_flutter/forum/widgets/discussion_card.dart';
 import 'package:pitch_perfect_flutter/forum/screens/create_post_form.dart';
 import 'package:pitch_perfect_flutter/clubdirectory/models/club_model.dart';
 import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart' as forum_model;
+import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 
 class ForumHomePage extends StatelessWidget {
   const ForumHomePage({super.key});
@@ -300,10 +301,10 @@ class _MyHomePageState extends State<MyHomePage> {
               });
             });
           } else {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const LoginPage()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
           }
         },
         backgroundColor: Theme.of(context).colorScheme.primary,

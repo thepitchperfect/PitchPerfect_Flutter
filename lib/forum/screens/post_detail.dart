@@ -220,6 +220,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
                     onPressed: () async {
+                      final request = context.read<CookieRequest>();
                       final content = _commentController.text;
                       if (content.isNotEmpty) {
                         // ======== BYPASS TEST USER =========
@@ -260,11 +261,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
 
                         // print($user_id: request.jsonData['id'], $content: content);
-                        final response = await request.post(
+                        final response = await request.postJson(
                           '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
-                          {
+                            jsonEncode(<String, String>{
                             'content': content,
-                          },
+                          }),
                         );
                         if (response['status'] == 'success') {
                           setState(() {
@@ -289,7 +290,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               ],
             ),
             if (!request.loggedIn)
-            const Text('You must be logged in to add a comment.'),
+              const Text('You must be logged in to add a comment.'),
 
             const SizedBox(height: 24.0),
 
