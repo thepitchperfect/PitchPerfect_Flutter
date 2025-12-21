@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/profile_models.dart';
+import 'package:pitch_perfect_flutter/matchprediction/models/matchpredictionmodel.dart';
 
 class PredictionCard extends StatelessWidget {
-  final MatchPrediction prediction;
+  final Matchprediction prediction;
 
   const PredictionCard({super.key, required this.prediction});
 
@@ -25,7 +25,8 @@ class PredictionCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "Your pick: ${prediction.prediction}",
+            "Your pick: pick",
+            //"Your pick: ${prediction.userPick}",
             style: const TextStyle(color: Colors.grey),
           ),
           const SizedBox(height: 12),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pitch_perfect_flutter/clubdirectory/models/club_models.dart';
+import 'package:pitch_perfect_flutter/clubdirectory/models/club_model.dart';
 
 class ClubGridItem extends StatelessWidget {
   final Club club;

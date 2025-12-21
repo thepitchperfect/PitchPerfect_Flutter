@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _searchQuery = '';
   Club? _selectedClub;
   List<Club> _allClubs = [];
+  List<Club> _userFavoriteClubs = [];
   bool _isAdmin = false;
 
   @override
@@ -87,6 +86,22 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+    // Get User favourite clubs
+    List<Club> favoriteClubs = [];
+    if (request.loggedIn) {
+      try {
+        final responseFavorites = await request.get('http://localhost:8000/forum/get-favorite-clubs/flutter/');
+        if (responseFavorites['status'] == 'success') {
+          favoriteClubs = (responseFavorites['clubs'] as List)
+              .map((clubJson) => Club.fromJson(clubJson))
+              .toList();
+        }
+      } catch (e) {
+        // Handle potential errors if the API call fails
+        print("Could not fetch favorite clubs: $e");
+      }
+    }
+
     // DELETE THIS LATER === BYPASS USER
     // final response = await http.get(Uri.parse('http://localhost:8000/forum/json/'));
     // final List<dynamic> responseData = json.decode(response.body); // Assuming the response is a direct list
@@ -104,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (mounted) {
       setState(() {
         _allClubs = clubs.toList();
+        _userFavoriteClubs = favoriteClubs;
         _allEntries = entries;
         _applyFilters();
       });
@@ -121,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (BuildContext context, StateSetter setModalState) {
             List<Club> filteredClubs = _isAdmin
                 ? _allClubs
-                : _allClubs.where((c) => c.isLeaguePick).toList();
+                : _userFavoriteClubs;
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -151,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     items: [
                       const DropdownMenuItem<Club>(
                         value: null,
-                        child: Text('Your Favourite Club'),
+                        child: Text('Your Favourite Clubs'),
                       ),
                       ...filteredClubs.map((Club club) {
                         return DropdownMenuItem<Club>(

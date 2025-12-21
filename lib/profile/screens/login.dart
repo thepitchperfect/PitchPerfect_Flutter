@@ -5,8 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Import your target page (Profile or Main)
-import 'profile_page.dart';
-import 'register.dart';
+import 'package:pitch_perfect_flutter/profile/screens/register.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -110,65 +109,59 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: _isLoading
                         ? null
                         : () async {
-                            setState(() => _isLoading = true);
-                            String username = _usernameController.text;
-                            String password = _passwordController.text;
+                      setState(() => _isLoading = true);
+                      String username = _usernameController.text;
+                      String password = _passwordController.text;
 
-                            // 1. URL Setup (Use 10.0.2.2 for Android Emulator)
-                            await request.get("http://127.0.0.1:8000/auth/login/");
-                            print("Cookies before POST login: ${request.cookies}");
-                            final response = await request.postJson(
-                              "http://127.0.0.1:8000/auth/login/",
-                              {'username': username, 'password': password},
-                            );
-                            print(request.cookies);
+                      // 1. URL Setup (Use 10.0.2.2 for Android Emulator)
+                      final response = await request.login(
+                        "http://localhost:8000/auth/login/",
+                        {'username': username, 'password': password},
+                      );
 
-                            if (!context.mounted) return;
+                      if (!context.mounted) return;
 
-                            if (request.loggedIn) {
-                              String message = response['message'];
-                              String uname = response['username'];
-                              print(request.cookies);
-                              print(request.loggedIn);
+                      if (request.loggedIn) {
+                        String message = response['message'];
+                        String uname = response['username'];
 
-                              // 2. Success Logic
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const MainPage(),
-                                ),
-                              );
+                        // 2. Success Logic
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MainPage(),
+                          ),
+                        );
 
-                              ScaffoldMessenger.of(context)
-                                ..hideCurrentSnackBar()
-                                ..showSnackBar(
-                                  SnackBar(
-                                    content: Text("$message Welcome, $uname."),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                            } else {
-                              // 3. Failure Logic (Using AlertDialog as requested)
-                              setState(() => _isLoading = false);
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Login Failed'),
-                                  content: Text(
-                                    response['message'] ?? "Unknown error",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('OK'),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          },
+                        ScaffoldMessenger.of(context)
+                          ..hideCurrentSnackBar()
+                          ..showSnackBar(
+                            SnackBar(
+                              content: Text("$message Welcome, $uname."),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                      } else {
+                        setState(() => _isLoading = false);
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Login Failed'),
+                            content: Text(
+                              response['message'] ?? "Unknown error",
+                            ),
+                            actions: [
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color(0xFFFE8800), // Theme Color

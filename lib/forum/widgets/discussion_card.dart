@@ -109,14 +109,8 @@ class DiscussionCard extends StatelessWidget {
                           height: 30,
                           width: 30,
                           errorBuilder: (context, error, stackTrace) {
-                            print(
-                              "Failed to load image: $logoUrl, Error: $error",
-                            );
-                            return const Icon(
-                              Icons.shield,
-                              size: 30,
-                              color: Colors.grey,
-                            );
+                            print("Failed to load image: $logoUrl, Error: $error");
+                            return const Icon(Icons.shield, size: 30, color: Colors.grey);
                           },
                         ),
                       );
