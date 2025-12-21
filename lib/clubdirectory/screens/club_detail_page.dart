@@ -1,12 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart'; // Make sure to add this to pubspec
+import 'package:shimmer/shimmer.dart'; 
 import 'package:google_fonts/google_fonts.dart';
 import '../models/club_model.dart';
+import '/statistics/screens/team_detail.dart';
 
 class ClubDetailPage extends StatefulWidget {
   final Club club;
@@ -70,18 +72,22 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
 
     try {
       final response = await request.get(url);
-      setState(() {
-        managerName = response['manager_name'];
-        stadiumName = response['stadium_name'];
-        stadiumCapacity = response['stadium_capacity_str'];
-        historySummary = response['history_summary'];
-        if (response['is_league_pick'] != null) {
-          isPicked = response['is_league_pick'];
-        }
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          managerName = response['manager_name'];
+          stadiumName = response['stadium_name'];
+          stadiumCapacity = response['stadium_capacity_str'];
+          historySummary = response['history_summary'];
+          
+          if (response['is_league_pick'] != null) {
+            isPicked = response['is_league_pick'];
+            widget.club.isLeaguePick = isPicked; 
+          }
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => isLoading = false);
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
@@ -91,10 +97,12 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
     final String url = '$_baseUrl/directory/set-league-pick/';
 
     try {
-      // NOTE: Passing Map directly to avoid double encoding
       final response = await request.postJson(
         url,
-        { 'club_id': clubIdToSend, 'league_id': widget.leagueId },
+        jsonEncode({ 
+          'club_id': clubIdToSend, 
+          'league_id': widget.leagueId 
+        }),
       );
 
       if (response['status'] == 'set' || response['status'] == 'cleared') {
@@ -115,10 +123,12 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
             ),
           );
         }
+      } else {
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${response['message']}")));
       }
     } catch (e) {
-      // Login error ignored as requested, just a generic snackbar
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Action failed. Check connection.")));
+      print("Toggle Pick Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Action failed: ${e.toString()}")));
     }
   }
 
@@ -168,7 +178,7 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
             backgroundColor: Colors.white,
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B), size: 20),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(context, true), // Return true to signal refresh
             ),
           ),
         ),
@@ -252,13 +262,46 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
               ),
             ),
 
-            // 2. BENTO GRID (With Shimmer Loading)
+            // 2. BENTO GRID
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: isLoading
                   ? _buildShimmerLoading()
                   : Column(
                       children: [
+                        // --- LINKED TO STATISTICS PAGE ---
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TeamDetailPage(clubId: widget.club.id),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1E293B),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 2,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.bar_chart, color: Color(0xFFF97316)),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "VIEW SEASON STATISTICS", 
+                                  style: GoogleFonts.tektur(fontWeight: FontWeight.bold, color: Colors.white)
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
                         Row(
                           children: [
                             Expanded(child: _buildInfoCard("MANAGER", managerName ?? "N/A", Icons.person, true)),
@@ -349,6 +392,8 @@ class _ClubDetailPageState extends State<ClubDetailPage> with TickerProviderStat
       highlightColor: Colors.grey.shade100,
       child: Column(
         children: [
+          Container(height: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20))),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(child: Container(height: 120, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)))),
