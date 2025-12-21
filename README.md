@@ -18,7 +18,7 @@ There are several features that our application can do; It allows users to follo
     * **Description**: The core application module that handles user registration, login, and profile management. It serves as the entry point that directs users to all other features.
     * **User Action**: Users can register for a new account, log in, and edit their profile information, including name, email, and password.
 
-2.  **Football Forum Official and Unofficial** (Ayshia) 
+2.  **Football Forum Official and Unofficial** (Ay) 
     * **Description**: A discussion platform where users can engage in conversations. Discussions can be filtered by favorite clubs. Admin accounts are designated as "Official" and can post official news.
     * **User Action**: Create new discussion posts/threads, reply to existing posts, and view official news from admins.
 
