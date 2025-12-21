@@ -1,5 +1,10 @@
 # Pitch Perfect
 
+[![Build Status](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/status.svg?token=CGTJLu2jyxKG8JG2qEOF-w&branch=master)](https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802)
+
+## Download
+Download the latest version of the application: [Download APK] (https://app.bitrise.io/app/1003fe0d-cd4e-4f53-a746-febe53b29802/installable-artifacts/6e47ff43cf5df17f/public-install-page/9413fd812f463f61a2ade96e5f28447c)
+
 ## Group members
 - 2406365326 - Sultanadika Shidqi Mumtazsami
 - 2406365351 - Ayshia La Fleur Felizia
@@ -18,7 +23,7 @@ There are several features that our application can do; It allows users to follo
     * **Description**: The core application module that handles user registration, login, and profile management. It serves as the entry point that directs users to all other features.
     * **User Action**: Users can register for a new account, log in, and edit their profile information, including name, email, and password.
 
-2.  **Football Forum Official and Unofficial** (Ay) 
+2.  **Football Forum Official and Unofficial** (Ayshia) 
     * **Description**: A discussion platform where users can engage in conversations. Discussions can be filtered by favorite clubs. Admin accounts are designated as "Official" and can post official news.
     * **User Action**: Create new discussion posts/threads, reply to existing posts, and view official news from admins.
 
