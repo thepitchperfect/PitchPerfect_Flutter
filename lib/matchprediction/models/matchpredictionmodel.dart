@@ -21,6 +21,9 @@ class Matchprediction {
   int totalVotes;
   VoteSummary voteSummary;
 
+  final String? userVote;
+  
+
   Matchprediction({
     required this.id,
     required this.league,
@@ -30,6 +33,7 @@ class Matchprediction {
     required this.status,
     required this.totalVotes,
     required this.voteSummary,
+    required this.userVote,
   });
 
   factory Matchprediction.fromJson(Map<String, dynamic> json) =>
@@ -42,6 +46,7 @@ class Matchprediction {
         status: json["status"],
         totalVotes: json["total_votes"],
         voteSummary: VoteSummary.fromJson(json["vote_summary"]),
+        userVote: json["user_vote"],
       );
 
   Map<String, dynamic> toJson() => {

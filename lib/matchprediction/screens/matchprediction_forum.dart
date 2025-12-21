@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'dart:io' show Platform;
-
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 import '../../clubdirectory/models/club_model.dart';
 
@@ -15,8 +14,9 @@ class MatchPredictionForm extends StatefulWidget {
       _MatchPredictionFormState();
 }
 
-class _MatchPredictionFormState extends State<MatchPredictionForm> {
-  // ---------------- FORM STATE ----------------
+class _MatchPredictionFormState
+    extends State<MatchPredictionForm> {
+  // FORM STATE
   String? selectedLeagueId;
   String? selectedHomeTeamId;
   String? selectedAwayTeamId;
@@ -40,24 +40,22 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
     _futureLeagues = fetchLeagues();
   }
 
-  // ---------------- FETCH LEAGUES + CLUBS ----------------
+  // FETCH THE LEAGUES
   Future<List<League>> fetchLeagues() async {
+    final request = context.read<CookieRequest>();
+
     final response =
-        await http.get(Uri.parse("$_baseUrl/directory/json/"));
-
-    if (response.statusCode != 200) {
-      throw Exception("Failed to load leagues");
-    }
-
-    final decoded = json.decode(response.body);
+        await request.get("$_baseUrl/directory/json/");
 
     final List leagueList =
-        decoded is Map ? decoded['leagues'] : decoded;
+        response is Map ? response['leagues'] : response;
 
-    return leagueList.map((e) => League.fromJson(e)).toList();
+    return leagueList
+        .map((e) => League.fromJson(e))
+        .toList();
   }
 
-  // ---------------- SUBMIT ----------------
+  // SUBMIT ADD MATCH FORM 
   Future<void> submitForm() async {
     if (selectedLeagueId == null ||
         selectedHomeTeamId == null ||
@@ -65,36 +63,33 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
         matchDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("⚠️ Please fill all fields"),
-        ),
+            content: Text("⚠️ Please fill all fields")),
       );
       return;
     }
 
-    final baseUrl = Platform.isAndroid
-        ? "http://10.0.2.2:8000"
-        : "https://arisa-raezzura-pitchperfect.pbp.cs.ui.ac.id";
+    final request = context.read<CookieRequest>();
 
-    final response = await http.post(
-      Uri.parse("$baseUrl/predictions/add/"),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: json.encode({
+    final response = await request.post(
+      "$_baseUrl/predictions/add/api/",
+      {
         "league": selectedLeagueId,
         "home_team": selectedHomeTeamId,
         "away_team": selectedAwayTeamId,
         "match_date": matchDate!.toIso8601String(),
         "status": status,
-      }),
+      },
     );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      Navigator.pop(context);
+    //  SUCCESS 
+    if (response["status"] == "success") {
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("❌ Failed to save match"),
+          content: Text(
+            "❌ ${response["message"] ?? "Failed to save match"}",
+          ),
         ),
       );
     }
@@ -104,9 +99,7 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Add New Match"),
-      ),
+      appBar: AppBar(title: const Text("Add New Match")),
       body: FutureBuilder<List<League>>(
         future: _futureLeagues,
         builder: (context, snapshot) {
@@ -118,12 +111,10 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text("Error: ${snapshot.error}"),
-            );
+                child: Text("Error: ${snapshot.error}"));
           }
 
           final leagues = snapshot.data!;
-
           final selectedLeague = leagues
               .where((l) => l.id == selectedLeagueId)
               .firstOrNull;
@@ -134,7 +125,8 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 _dropdown(
                   label: "League",
@@ -153,7 +145,6 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
                     });
                   },
                 ),
-
                 _dropdown(
                   label: "Home team",
                   value: selectedHomeTeamId,
@@ -164,9 +155,9 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
                     );
                   }).toList(),
                   onChanged: (v) =>
-                      setState(() => selectedHomeTeamId = v),
+                      setState(() =>
+                          selectedHomeTeamId = v),
                 ),
-
                 _dropdown(
                   label: "Away team",
                   value: selectedAwayTeamId,
@@ -177,24 +168,24 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
                     );
                   }).toList(),
                   onChanged: (v) =>
-                      setState(() => selectedAwayTeamId = v),
+                      setState(() =>
+                          selectedAwayTeamId = v),
                 ),
-
                 const SizedBox(height: 16),
-
-                Text(
+                const Text(
                   "Match date",
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
                   onPressed: () async {
-                    final date = await showDatePicker(
+                    final date =
+                        await showDatePicker(
                       context: context,
                       firstDate: DateTime.now(),
-                      lastDate:
-                          DateTime.now().add(const Duration(days: 365)),
+                      lastDate: DateTime.now()
+                          .add(const Duration(days: 365)),
                       initialDate: DateTime.now(),
                     );
 
@@ -207,12 +198,12 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
                   child: Text(
                     matchDate == null
                         ? "Select date"
-                        : matchDate!.toLocal().toString(),
+                        : matchDate!
+                            .toLocal()
+                            .toString(),
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
                 _dropdown(
                   label: "Status",
                   value: status,
@@ -227,9 +218,7 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
                   onChanged: (v) =>
                       setState(() => status = v!),
                 ),
-
                 const SizedBox(height: 30),
-
                 Row(
                   mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
@@ -240,7 +229,8 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
                       label: const Text("Save"),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () =>
+                          Navigator.pop(context),
                       child: const Text("Cancel"),
                     ),
                   ],
@@ -263,11 +253,12 @@ class _MatchPredictionFormState extends State<MatchPredictionForm> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
         children: [
           Text(label,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w600)),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
             value: value,

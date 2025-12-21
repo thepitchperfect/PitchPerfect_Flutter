@@ -1,9 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
-<<<<<<< HEAD
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-=======
->>>>>>> 7a15f6b14d704a6029bcf38f6a8fd48360af2372
     <application
         android:label="pitch_perfect_flutter"
         android:name="${applicationName}"
