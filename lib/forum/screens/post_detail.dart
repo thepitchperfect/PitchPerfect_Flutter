@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -260,9 +261,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         // print($user_id: request.jsonData['id'], $content: content);
                         final response = await request.postJson(
                           '$_baseUrl/forum/api/post/${widget.post.id}/comment/create/flutter/',
-                          {
+                          jsonEncode({
                             'content': content,
-                          },
+                          }),
                         );
                         if (response['status'] == 'success') {
                           setState(() {

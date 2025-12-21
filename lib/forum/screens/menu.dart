@@ -7,6 +7,7 @@ import 'package:pitch_perfect_flutter/forum/widgets/discussion_card.dart';
 import 'package:pitch_perfect_flutter/forum/screens/create_post_form.dart';
 import 'package:pitch_perfect_flutter/clubdirectory/models/club_model.dart';
 import 'package:pitch_perfect_flutter/forum/models/forum_entry.dart' as forum_model;
+import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 
 class ForumHomePage extends StatelessWidget {
   const ForumHomePage({super.key});
@@ -32,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _searchQuery = '';
   Club? _selectedClub;
   List<Club> _allClubs = [];
+  List<Club> _userFavoriteClubs = [];
   bool _isAdmin = false;
 
   @override
@@ -84,6 +86,22 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+    // Get User favourite clubs
+    List<Club> favoriteClubs = [];
+    if (request.loggedIn) {
+      try {
+        final responseFavorites = await request.get('http://localhost:8000/forum/get-favorite-clubs/flutter/');
+        if (responseFavorites['status'] == 'success') {
+          favoriteClubs = (responseFavorites['clubs'] as List)
+              .map((clubJson) => Club.fromJson(clubJson))
+              .toList();
+        }
+      } catch (e) {
+        // Handle potential errors if the API call fails
+        print("Could not fetch favorite clubs: $e");
+      }
+    }
+
     // DELETE THIS LATER === BYPASS USER
     // final response = await http.get(Uri.parse('http://localhost:8000/forum/json/'));
     // final List<dynamic> responseData = json.decode(response.body); // Assuming the response is a direct list
@@ -101,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (mounted) {
       setState(() {
         _allClubs = clubs.toList();
+        _userFavoriteClubs = favoriteClubs;
         _allEntries = entries;
         _applyFilters();
       });
@@ -118,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (BuildContext context, StateSetter setModalState) {
             List<Club> filteredClubs = _isAdmin
                 ? _allClubs
-                : _allClubs.where((c) => c.isLeaguePick).toList();
+                : _userFavoriteClubs;
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -148,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     items: [
                       const DropdownMenuItem<Club>(
                         value: null,
-                        child: Text('Your Favourite Club'),
+                        child: Text('Your Favourite Clubs'),
                       ),
                       ...filteredClubs.map((Club club) {
                         return DropdownMenuItem<Club>(
@@ -298,10 +317,10 @@ class _MyHomePageState extends State<MyHomePage> {
               });
             });
           } else {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const LoginPage()),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
           }
         },
         backgroundColor: Theme.of(context).colorScheme.primary,

@@ -119,7 +119,10 @@ class _LoginPageState extends State<LoginPage> {
 
                   // --- Login Button ---
                   ElevatedButton(
-                    onPressed: () async {
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                      setState(() => _isLoading = true);
                       String username = _usernameController.text;
                       String password = _passwordController.text;
 
@@ -152,23 +155,24 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           );
                       } else {
-                        if (context.mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Login Failed'),
-                              content: Text(response['message']),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
+                        setState(() => _isLoading = false);
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Login Failed'),
+                            content: Text(
+                              response['message'] ?? "Unknown error",
                             ),
-                          );
-                        }
+                            actions: [
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
