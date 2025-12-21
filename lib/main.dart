@@ -7,6 +7,7 @@ import 'package:pitch_perfect_flutter/forum/screens/menu.dart';
 import 'package:pitch_perfect_flutter/profile/screens/profile_page.dart';
 import 'package:pitch_perfect_flutter/statistics/screens/statistics_home.dart';
 import 'package:pitch_perfect_flutter/matchprediction/screens/matchprediction_main.dart';
+import 'package:pitch_perfect_flutter/profile/screens/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -73,7 +74,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const MainPage(),
+        home: const LoginPage(),
       ),
     );
   }
