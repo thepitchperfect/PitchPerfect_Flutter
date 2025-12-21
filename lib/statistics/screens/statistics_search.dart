@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pitch_perfect_flutter/statistics/models/club_ranking.dart';
 import 'package:pitch_perfect_flutter/statistics/models/team_statistic.dart';
 import 'package:pitch_perfect_flutter/statistics/screens/team_detail.dart';
-import 'package:pitch_perfect_flutter/statistics/services/statistics_service.dart';
-import 'package:provider/provider.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class StatisticsSearchDelegate extends SearchDelegate {
   final List<TeamStatistic> allClubs;
