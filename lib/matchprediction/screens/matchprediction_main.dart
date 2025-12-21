@@ -1,5 +1,10 @@
 import 'dart:async';
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 import '../screens/matchprediction_list.dart';
 import '../screens/matchprediction_forum.dart';
@@ -8,7 +13,8 @@ class MatchPredictionMain extends StatefulWidget {
   const MatchPredictionMain({super.key});
 
   @override
-  State<MatchPredictionMain> createState() => _MatchPredictionMainState();
+  State<MatchPredictionMain> createState() =>
+      _MatchPredictionMainState();
 }
 
 class _MatchPredictionMainState extends State<MatchPredictionMain> {
@@ -16,10 +22,14 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
   String filterType = 'all';
   String searchQuery = '';
 
+  // 🔐 ADMIN STATE
+  bool _isAdmin = false;
+
   // 🔥 AUTO SCROLL
   late final ScrollController _leagueScrollController;
   Timer? _autoScrollTimer;
   bool _scrollForward = true;
+  bool _userInteracting = false;
 
   @override
   void initState() {
@@ -30,6 +40,14 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
       const Duration(milliseconds: 30),
       (_) => _autoScroll(),
     );
+
+    // ✅ RUN ADMIN CHECK ONCE (NO LOOP)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final request = context.read<CookieRequest>();
+      if (request.loggedIn) {
+        _checkAdmin(request);
+      }
+    });
   }
 
   @override
@@ -41,6 +59,7 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
   void _autoScroll() {
     if (!_leagueScrollController.hasClients) return;
+    if (_userInteracting) return;
 
     final maxScroll =
         _leagueScrollController.position.maxScrollExtent;
@@ -62,6 +81,29 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
       } else {
         _leagueScrollController.jumpTo(current - step);
       }
+    }
+  }
+
+  // 🔐 CHECK ADMIN STATUS (CALLED ONCE)
+  Future<void> _checkAdmin(CookieRequest request) async {
+    final baseUrl = Platform.isAndroid
+        ? "http://10.0.2.2:8000"
+        : "http://localhost:8000";
+
+    try {
+      final response =
+          await request.get("$baseUrl/predictions/auth/is-admin/");
+
+      if (!mounted) return;
+
+      setState(() {
+        _isAdmin = response["is_admin"] == true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isAdmin = false;
+      });
     }
   }
 
@@ -94,21 +136,29 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
             const SizedBox(height: 24),
 
-            // 🔵 LEAGUE FILTER (AUTO SCROLL)
-            SingleChildScrollView(
-              controller: _leagueScrollController,
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  _leagueButton("All Leagues", ''),
-                  _leagueButton("Premier League", "Premier League"),
-                  _leagueButton("La Liga", "La Liga"),
-                  _leagueButton("Serie A", "Serie A"),
-                  _leagueButton("Bundesliga", "Bundesliga"),
-                  _leagueButton("Ligue 1", "Ligue 1 McDonald's"),
-                  _leagueButton("Primeira Liga", "Primeira Liga"),
-                ],
+            // 🔵 LEAGUE FILTER
+            NotificationListener<UserScrollNotification>(
+              onNotification: (notification) {
+                _userInteracting =
+                    notification.direction != ScrollDirection.idle;
+                return false;
+              },
+              child: SingleChildScrollView(
+                controller: _leagueScrollController,
+                scrollDirection: Axis.horizontal,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    _leagueButton("All Leagues", ''),
+                    _leagueButton("Premier League", "Premier League"),
+                    _leagueButton("La Liga", "La Liga"),
+                    _leagueButton("Serie A", "Serie A"),
+                    _leagueButton("Bundesliga", "Bundesliga"),
+                    _leagueButton("Ligue 1", "Ligue 1 McDonald's"),
+                    _leagueButton("Primeira Liga", "Primeira Liga"),
+                  ],
+                ),
               ),
             ),
 
@@ -136,35 +186,40 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
 
             const SizedBox(height: 12),
 
-            // 🔵 ADD MATCH BUTTON (NEW)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            const MatchPredictionForm(),
+            // 🔵 ADD MATCH BUTTON (ADMIN ONLY)
+            if (_isAdmin)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final created = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const MatchPredictionForm(),
+                        ),
+                      );
+
+                      if (created == true) {
+                        setState(() {});
+                      }
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text("Add Match"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding:
+                          const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text("Add Match"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                 ),
               ),
-            ),
 
             const SizedBox(height: 16),
 
@@ -189,6 +244,8 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
             // 🔵 MATCH LIST
             Expanded(
               child: MatchListScreen(
+                key: ValueKey(
+                    "$selectedLeagueName|$filterType|$searchQuery"),
                 leagueName: selectedLeagueName,
                 filterType: filterType,
                 searchQuery: searchQuery,
@@ -214,7 +271,8 @@ class _MatchPredictionMainState extends State<MatchPredictionMain> {
           setState(() => selectedLeagueName = leagueName);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: isActive ? Colors.amber : Colors.white,
+          backgroundColor:
+              isActive ? Colors.amber : Colors.white,
           foregroundColor: Colors.black,
           elevation: 2,
           shape: RoundedRectangleBorder(

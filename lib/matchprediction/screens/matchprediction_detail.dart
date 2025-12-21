@@ -3,6 +3,8 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 import '../models/matchpredictionmodel.dart';
 import '../../clubdirectory/models/club_model.dart';
@@ -23,15 +25,21 @@ class MatchPredictionDetail extends StatefulWidget {
 class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
   late Future<Map<String, Club>> _futureClubMap;
 
+  /// 🔒 BACKEND-AUTHORITATIVE VOTE STATE
+  String? _userPrediction;
+
   @override
   void initState() {
     super.initState();
     _futureClubMap = fetchClubMap();
+
+    // 🔥 LOCK BASED ON BACKEND VALUE (SURVIVES HOT RESTART)
+    _userPrediction = widget.match.userVote;
   }
 
-  // ==============================
-  // 🔵 FETCH CLUB DIRECTORY
-  // ==============================
+  // =========================
+  // FETCH CLUB DIRECTORY
+  // =========================
   Future<Map<String, Club>> fetchClubMap() async {
     final baseUrl = Platform.isAndroid
         ? "http://10.0.2.2:8000"
@@ -45,26 +53,23 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     }
 
     final decoded = json.decode(response.body);
-
-    List leagueList;
+    List leagues;
 
     if (decoded is Map && decoded['leagues'] is List) {
-      leagueList = decoded['leagues'];
+      leagues = decoded['leagues'];
     } else if (decoded is List) {
-      leagueList = decoded;
+      leagues = decoded;
     } else {
-      throw Exception("Unsupported club directory JSON structure");
+      throw Exception("Invalid club JSON");
     }
 
     final Map<String, Club> clubMap = {};
-
-    for (final leagueJson in leagueList) {
+    for (final leagueJson in leagues) {
       final league = League.fromJson(leagueJson);
       for (final club in league.clubs) {
         clubMap[club.id] = club;
       }
     }
-
     return clubMap;
   }
 
@@ -164,7 +169,6 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
                   ),
                   const SizedBox(height: 20),
 
-                  // 🔥 SMALL HORIZONTAL BUTTONS
                   Row(
                     children: [
                       Expanded(
@@ -195,6 +199,74 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
                       ),
                     ],
                   ),
+
+                  // ================= ALREADY VOTED UI =================
+                  if (_userPrediction != null) ...[
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(16),
+                        border:
+                            Border.all(color: Colors.orange),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(Icons.check_circle,
+                                  color: Colors.green),
+                              SizedBox(width: 8),
+                              Text(
+                                "You have already voted for this match!",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "Your prediction: ${_userPrediction!.replaceAll('_', ' ').toUpperCase()}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.amber),
+                                  onPressed: () {
+                                    setState(() {
+                                      _userPrediction = null;
+                                    });
+                                  },
+                                  child:
+                                      const Text("Edit Vote"),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.red),
+                                  onPressed: _deleteVote,
+                                  child:
+                                      const Text("Delete Vote"),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   const Divider(height: 40),
 
@@ -236,10 +308,11 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius:
+                              BorderRadius.circular(14),
                         ),
                       ),
                       child: const Text(
@@ -264,13 +337,14 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
 
   Widget _teamHeader(Club? club) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         CircleAvatar(
           radius: 36,
           backgroundColor: Colors.grey.shade200,
           backgroundImage:
-              club?.logoUrl != null ? NetworkImage(club!.logoUrl!) : null,
+              club?.logoUrl != null
+                  ? NetworkImage(club!.logoUrl!)
+                  : null,
           child: club?.logoUrl == null
               ? const Icon(Icons.shield, size: 36)
               : null,
@@ -299,13 +373,15 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment:
+              MainAxisAlignment.spaceBetween,
           children: [
             Text(label,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600)),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600)),
             Text("${percent.toStringAsFixed(1)}%",
-                style: const TextStyle(color: Colors.grey)),
+                style:
+                    const TextStyle(color: Colors.grey)),
           ],
         ),
         const SizedBox(height: 6),
@@ -315,7 +391,8 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
             value: percent / 100,
             minHeight: 14,
             backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation(color),
+            valueColor:
+                AlwaysStoppedAnimation(color),
           ),
         ),
       ],
@@ -324,8 +401,8 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
 
   Widget _statusBadge(String status) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+          horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.grey.shade200,
         borderRadius: BorderRadius.circular(20),
@@ -354,17 +431,27 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
     required Color color,
     required String prediction,
   }) {
+    final bool hasVoted = _userPrediction != null;
+    final bool isSelected = _userPrediction == prediction;
+
     return ElevatedButton(
-      onPressed: () async {
-        final confirmed = await _confirmVote(context, label);
-        if (confirmed) {
-          await _submitVote(context, prediction);
-        }
-      },
+      onPressed: hasVoted
+          ? null
+          : () async {
+              final confirmed =
+                  await _confirmVote(context, label);
+              if (confirmed) {
+                await _submitVote(context, prediction);
+              }
+            },
       style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        padding:
-            const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        backgroundColor: isSelected
+            ? color.withOpacity(0.9)
+            : hasVoted
+                ? Colors.grey.shade400
+                : color,
+        padding: const EdgeInsets.symmetric(
+            horizontal: 8, vertical: 10),
         minimumSize: const Size(0, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -393,11 +480,13 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
                 Text('Are you sure you want to vote for "$label"?'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () =>
+                    Navigator.pop(context, false),
                 child: const Text("Cancel"),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
+                onPressed: () =>
+                    Navigator.pop(context, true),
                 child: const Text("Confirm"),
               ),
             ],
@@ -407,57 +496,59 @@ class _MatchPredictionDetailState extends State<MatchPredictionDetail> {
   }
 
   Future<void> _submitVote(
-    BuildContext context, String prediction) async {
+    BuildContext context,
+    String prediction,
+  ) async {
     final baseUrl = Platform.isAndroid
         ? "http://10.0.2.2:8000"
         : "http://localhost:8000";
 
-    final url =
-        Uri.parse("$baseUrl/predictions/vote/${widget.match.id}/");
+    final request = context.read<CookieRequest>();
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: {
-          "prediction": prediction,
-        },
-      );
+    final response = await request.post(
+      "$baseUrl/predictions/vote/api/${widget.match.id}/",
+      {"prediction": prediction},
+    );
 
-      if (response.statusCode == 200 || response.statusCode == 302) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("✅ Vote submitted successfully"),
-            backgroundColor: Colors.green,
-          ),
-        );
-        setState(() {});
-      } else if (response.statusCode == 401 ||
-          response.statusCode == 403) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("⚠️ Please login to vote"),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text("❌ Vote failed (${response.statusCode})"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("❌ Network error: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    setState(() {
+      _userPrediction = prediction;
+      widget.match.totalVotes = response["total_votes"];
+      widget.match.voteSummary =
+          VoteSummary.fromJson(response["vote_summary"]);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Vote submitted successfully"),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
+
+Future<void> _deleteVote() async {
+  final baseUrl = Platform.isAndroid
+      ? "http://10.0.2.2:8000"
+      : "http://localhost:8000";
+
+  final request = context.read<CookieRequest>();
+
+  final response = await request.post(
+    "$baseUrl/predictions/delete-vote/api/${widget.match.id}/",
+    {},
+  );
+
+  setState(() {
+    _userPrediction = null;
+    widget.match.totalVotes = response["total_votes"];
+    widget.match.voteSummary =
+        VoteSummary.fromJson(response["vote_summary"]);
+  });
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Vote deleted successfully"),
+      backgroundColor: Colors.red,
+    ),
+  );
+}
 }

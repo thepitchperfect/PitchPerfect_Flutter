@@ -4,6 +4,9 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+
 import '../models/matchpredictionmodel.dart';
 import '../widgets/matchprediction_card.dart';
 import '../../clubdirectory/models/club_model.dart';
@@ -49,7 +52,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
   }
 
   // ==============================
-  // 🔵 FETCH MATCHES (STABLE)
+  // 🔵 FETCH MATCHES (AUTH-AWARE)
   // ==============================
   Future<List<Matchprediction>> fetchMatches() async {
     final baseUrl = Platform.isAndroid
@@ -63,14 +66,13 @@ class _MatchListScreenState extends State<MatchListScreen> {
       },
     );
 
-    final response = await http.get(uri);
+    // 🔥 IMPORTANT FIX: USE CookieRequest
+    final request = context.read<CookieRequest>();
+    final response = await request.get(uri.toString());
 
-    if (response.statusCode != 200) {
-      throw Exception("Failed to load matches (${response.statusCode})");
-    }
-
+    // CookieRequest.get() returns decoded JSON
     List<Matchprediction> matches =
-        matchpredictionFromJson(response.body);
+        matchpredictionFromJson(jsonEncode(response));
 
     // ✅ STABLE LEAGUE FILTER (NAME-BASED)
     if (widget.leagueName.isNotEmpty) {
@@ -83,7 +85,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
   }
 
   // ==============================
-  // 🔵 FETCH CLUB DIRECTORY
+  // 🔵 FETCH CLUB DIRECTORY (UNCHANGED)
   // ==============================
   Future<Map<String, Club>> fetchClubMap() async {
     final baseUrl = Platform.isAndroid
@@ -122,7 +124,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
   }
 
   // ==============================
-  // 🔵 UI
+  // 🔵 UI (UNCHANGED)
   // ==============================
   @override
   Widget build(BuildContext context) {
@@ -148,8 +150,10 @@ class _MatchListScreenState extends State<MatchListScreen> {
         return FutureBuilder<List<Matchprediction>>(
           future: _futureMatches,
           builder: (context, matchSnapshot) {
-            if (matchSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+            if (matchSnapshot.connectionState ==
+                ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator());
             }
 
             if (matchSnapshot.hasError) {
@@ -165,7 +169,8 @@ class _MatchListScreenState extends State<MatchListScreen> {
             final matches = matchSnapshot.data!;
 
             if (matches.isEmpty) {
-              return const Center(child: Text("No matches available"));
+              return const Center(
+                  child: Text("No matches available"));
             }
 
             return ListView.builder(
