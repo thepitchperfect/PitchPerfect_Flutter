@@ -5,9 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/statistics_service.dart';
 import '../models/team_statistic.dart';
 import '../models/club_ranking.dart';
+import '../models/vote_models.dart';
 import 'statistics_list.dart';
 import 'vote_page.dart';
 import 'team_detail.dart';
+import 'statistics_search.dart';
 
 class StatisticsHomePage extends StatefulWidget {
   const StatisticsHomePage({super.key});
@@ -18,12 +20,61 @@ class StatisticsHomePage extends StatefulWidget {
 
 class _StatisticsHomePageState extends State<StatisticsHomePage> {
   Future<Map<String, dynamic>>? _dataFuture;
+  List<TeamStatistic> _allClubsForSearch = [];
 
   @override
   void initState() {
     super.initState();
     final request = context.read<CookieRequest>();
     _dataFuture = StatisticsService.fetchGeneralStats(request);
+    _loadAllClubs(request);
+  }
+
+  Future<void> _loadAllClubs(CookieRequest request) async {
+    // We can re-use fetchGeneralStats if it has all clubs, 
+    // or create a new method to fetch just names/ids for search.
+    // For now, let's assume we can get a list of clubs from somewhere or 
+    // maybe we just use the top lists as a starting point.
+    // To do it properly, we should add an endpoint or method to get all clubs.
+
+    // Assuming fetchAllClubs returns SimpleClub, we might need to map it to TeamStatistic
+    // or just change SearchDelegate to use SimpleClub.
+    // Let's use fetchAllClubs from StatisticsService which returns SimpleClub
+    try {
+      final simpleClubs = await StatisticsService.fetchAllClubs(request);
+      // Map SimpleClub to TeamStatistic (minimal fields needed for search)
+      setState(() {
+        _allClubsForSearch = simpleClubs.map((sc) => TeamStatistic(
+          clubId: sc.id,
+          clubName: sc.name,
+          logoUrl: sc.logoUrl,
+          // Dummy values for required fields
+          season: '',
+          matchesPlayed: 0,
+          wins: 0,
+          draws: 0,
+          losses: 0,
+          winPercentage: 0,
+          scoredPerMatch: 0,
+          concededPerMatch: 0,
+          avgMatchGoals: 0,
+          cleanSheetsPercentage: 0,
+          failedToScorePercentage: 0,
+          possessionAvg: 0,
+          shotsTakenPerMatch: 0,
+          shotsConversionRate: 0,
+          foulsCommittedPerMatch: 0,
+          fouledAgainstPerMatch: 0,
+          penaltiesWon: '',
+          penaltiesConceded: '',
+          goalKicksPerMatch: 0,
+          throwInsPerMatch: 0,
+          freeKicksPerMatch: 0,
+        )).toList();
+      });
+    } catch (e) {
+      print("Error loading clubs for search: $e");
+    }
   }
 
   @override
@@ -33,10 +84,22 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
       appBar: AppBar(
         title: Text(
           'Football Statistics Hub',
-          style: GoogleFonts.orbitron(fontWeight: FontWeight.bold),
+          style: GoogleFonts.orbitron(fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)),
         ),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1E293B),
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: StatisticsSearchDelegate(_allClubsForSearch),
+              );
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _dataFuture,
@@ -141,7 +204,7 @@ class _StatisticsHomePageState extends State<StatisticsHomePage> {
           icon: const Icon(Icons.how_to_vote),
           label: const Text('Vote Club of Season'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
+            backgroundColor: const Color(0xFFF97316),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
